@@ -28,9 +28,8 @@ import com.pehlaj.chairlift.utils.Utils;
 
 public class BookRideActivity extends AppCompatActivity {
 
-	private Toolbar toolbar;
+    private Toolbar toolbar;
 
-    private Button btnBack;
     private Button btnBook;
     private ImageView imgMenu;
     private TextView txtTitle;
@@ -48,7 +47,7 @@ public class BookRideActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             navigateBack();
             return true;
         }
@@ -78,7 +77,7 @@ public class BookRideActivity extends AppCompatActivity {
 
         bus = getIntent().getParcelableExtra(Constants.EXTRA_BUS);
 
-        if(bus == null) {
+        if (bus == null) {
             return;
         }
 
@@ -92,7 +91,6 @@ public class BookRideActivity extends AppCompatActivity {
     private void initViews() {
 
         toolbar = findViewById(R.id.toolbar);
-        btnBack = findViewById(R.id.btnBack);
         btnBook = findViewById(R.id.btnBook);
 
         imgMenu = findViewById(R.id.imgMenu);
@@ -121,7 +119,6 @@ public class BookRideActivity extends AppCompatActivity {
 
     private void setListeners() {
 
-        btnBack.setOnClickListener(btnBackClickListener);
         btnBook.setOnClickListener(btnBookClickListener);
 
         imgMenu.setOnClickListener(btnBackClickListener);
@@ -133,7 +130,7 @@ public class BookRideActivity extends AppCompatActivity {
 
         boolean isLoggedIn = PreferenceUtility.getBoolean(this, Utils.LOGIN_STATUS, false);
 
-        if(!isLoggedIn || AppConfig.getInstance().isAppRunning(this)) {
+        if (!isLoggedIn || AppConfig.getInstance().isAppRunning(this)) {
             finish();
             return;
         }
@@ -200,8 +197,8 @@ public class BookRideActivity extends AppCompatActivity {
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty(KeyConstants.KEY_BUS_ID, busId);
         requestBody.addProperty(KeyConstants.KEY_RIDER_ID, rider);
-        requestBody.add (KeyConstants.KEY_PICKUP_LOCATION, pickup.toJson());
-        requestBody.add (KeyConstants.KEY_DROPOFF_LOCATION, dropOff.toJson());
+        requestBody.add(KeyConstants.KEY_PICKUP_LOCATION, pickup.toJson());
+        requestBody.add(KeyConstants.KEY_DROPOFF_LOCATION, dropOff.toJson());
 
         ApiClient.getClient().create(Services.class).bookRide(requestBody).enqueue(new WebClientCallBack<ApiResponse>(this, new WebServiceCallBack() {
 

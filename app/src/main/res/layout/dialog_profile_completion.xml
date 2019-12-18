@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="325dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_rounded_white"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/_12sdp"
+    android:paddingBottom="@dimen/_12sdp"
+    android:paddingLeft="@dimen/_12sdp"
+    android:paddingRight="@dimen/_12sdp">
+
+    <TextView
+        android:id="@+id/txtDetails"
+        style="@style/txtPopupHeading"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/details"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:id="@+id/layoutCountry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtDetails">
+
+        <TextView
+            android:id="@+id/txtEmploymentCountry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/spnCountries"
+            android:layout_alignTop="@+id/spnCountries"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:text="@string/booking_type" />
+
+        <Spinner
+            android:id="@+id/spnCountries"
+            style="@style/SpinnerTheme"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_36sdp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="@dimen/space_6sdp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/txtEmploymentCountry"
+            android:entries="@array/booking_types"
+            android:gravity="center"
+            android:overlapAnchor="false"
+            android:paddingLeft="10dp"
+            android:prompt="@string/select"
+            android:spinnerMode="dropdown"
+            android:text="@string/select" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/eTxtEmail"
+        style="@style/CustomEditTextWithBg"
+        android:layout_below="@+id/layoutCountry"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_alignRight="@+id/layoutCountry"
+        android:hint="@string/email" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/eTxtEmail"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnNegative"
+            style="@style/CustomButton"
+            android:layout_width="125dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/btnPositive"
+            style="@style/CustomButtonBlue"
+            android:layout_width="125dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.pehlaj.chairlift"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 17120601
+        versionName "1.0"
+        project.archivesBaseName = "chairlift";
+        multiDexEnabled true
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'pg_tejani_chairlift'
+            keyPassword 'ChyrLyfTg@PK1o8'
+            storeFile file('gcmomessages.jks')
+            storePassword 'ChyrLyfTg@PK1o8'
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
+
+    implementation 'jp.wasabeef:recyclerview-animators:2.2.3'
+
+    //implementation 'com.github.worker8:RadioGroupPlus:v1.0.1'
+    implementation 'com.intuit.sdp:sdp-android:1.0.3'
+    implementation 'com.mikhaellopez:circularprogressbar:1.1.1'
+
+    implementation 'com.nineoldandroids:library:2.4.0'
+    //implementation 'com.flyco.dialog:FlycoDialog_Lib:1.2.8@aar'
+}

@@ -1,0 +1,99 @@
+<resources>
+    <string name="app_name">ChairLift</string>
+    <string name="email">Email</string>
+    <string name="submit">Submit</string>
+    <string name="register">Register</string>
+
+    <string name="not_enough_permissions">Not enough permissions to publish</string>
+    <string name="error_empty_url">Nothing to share right now. Please try later.</string>
+
+    <!-- google -->
+    <string name="server_client_id">647431740531-c3goecb56jekal2375l3a6jbmbdi1cbb.apps.googleusercontent.com</string>
+
+    <string name="facebook_app_id">679831742214534</string>
+    <string name="facebook_login_parameters">email</string>
+    <string name="fb_login_protocol_scheme">fb679831742214534</string>
+
+    <string name="txt_error_connection">An error occurred</string>
+    <string name="error_server_down">Server is not responding. Please try later.</string>
+
+    <string name="next">Next</string>
+
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="mobile_number_format">Mobile Number(Country Code)(Tel#)</string>
+    <string name="msg_sign_up_success">We will review your request and will notify you via email.</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="back">Back</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign In</string>
+    <string name="create_account">Create an account</string>
+    <string name="register_now">Register Now</string>
+    <string name="or">Or</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="fb_sign_in">Sign in with Facebook</string>
+    <string name="google_sign_in">Sign in with google</string>
+    <string name="select">Select</string>
+    <string name="err_select_country">Please select country.</string>
+    <string name="err_no_data_found">No data found.</string>
+    <string name="search">Search</string>
+    <string name="txt_search"><![CDATA[Search]]></string>
+    <string name="imei">Imei</string>
+    <string name="verify">Verify</string>
+
+    <string-array name="booking_types">
+        <item>All</item>
+        <item>Current</item>
+        <item>Future</item>
+        <item>Completed</item>
+    </string-array>
+
+    <string name="city">City</string>
+    <string name="err_email">Please enter email.</string>
+    <string name="err_invalid_email">Please enter valid email.</string>
+    <string name="err_password">Please enter password.</string>
+    <string name="err_min_password_length">Min password length is %d.</string>
+    <string name="msg_back_press">Press back again to exit.</string>
+    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
+    <string name="sign_up">SignUp</string>
+    <string name="err_verification_code">Please enter verification code.</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="err_register_fb_user">Error while registering facebook user.</string>
+    <string name="err_register_google_user">Error while registering google user.</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="details">Details</string>
+    <string name="save">Save</string>
+    <string name="cancelled">Cancelled.</string>
+    <string name="update">Update</string>
+    <string name="profile">Profile</string>
+    <string name="password_optional">Password (Optional)</string>
+    <string name="street_address">Street Address</string>
+    <string name="full_name">Full Name</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="token">Token</string>
+    <string name="err_name">Please enter name.</string>
+    <string name="err_token">Please enter password.</string>
+    <string name="err_number">Please enter mobile number.</string>
+    <string name="err_invalid_number">Please enter valid number.</string>
+    <string name="err_username">Please enter email.</string>
+    <string name="err_invalid_username">Please enter valid email.</string>
+    <string name="bus_details">Bus Details</string>
+    <string name="already_have_an_account">Already Have an Account?</string>
+    <string name="logout">LogOut</string>
+    <string name="messages">Bus List</string>
+    <string name="current">Current</string>
+    <string name="future">Future</string>
+    <string name="completed">Completed</string>
+
+    <string name="home">Home</string>
+    <string name="book">Book</string>
+    <string name="book_ride">Book Ride</string>
+    <string name="bus_list">Bus List</string>
+    <string name="booking_type">Booking Type</string>
+
+
+</resources>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardView="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    cardView:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/element_spacing"
+        android:paddingTop="@dimen/element_spacing"
+        android:paddingRight="@dimen/element_spacing"
+        android:paddingBottom="@dimen/element_spacing">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/txtStatus"
+            android:gravity="start|center_vertical"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            android:visibility="visible"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/txtDesc"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtTitle"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/btnBook"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="bold"
+            tools:text="Test Name" />
+
+        <TextView
+            android:id="@+id/txtTime"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtDesc"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/btnBook"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="bold"
+            tools:text="Time" />
+
+        <TextView
+            android:id="@+id/txtStatus"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:gravity="end|center_vertical"
+            android:textStyle="bold"
+            tools:text="Status" />
+
+        <TextView
+            android:id="@+id/txtSeats"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/btnBook"
+            android:layout_below="@+id/txtTime"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:gravity="start|center_vertical"
+            android:textStyle="bold"
+            tools:text="Seats" />
+
+        <Button
+            android:id="@+id/btnBook"
+            style="@style/CustomButton"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="30dp"
+            android:layout_below="@id/txtTime"
+            android:layout_alignParentEnd="true"
+            android:background="@color/green"
+            android:padding="4dp"
+            android:text="@string/book" />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

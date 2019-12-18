@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardView="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    cardView:cardCornerRadius="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/element_spacing"
+        android:paddingLeft="@dimen/element_spacing"
+        android:paddingRight="@dimen/element_spacing"
+        android:paddingTop="@dimen/element_spacing">
+
+        <TextView
+            android:id="@+id/txtName"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.34"
+            android:gravity="center"
+            android:textSize="@dimen/text_size_small"
+            tools:text="Test Name" />
+
+        <TextView
+            android:id="@+id/txtCategory"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_4dp"
+            android:layout_weight="0.33"
+            android:gravity="center"
+            tools:text="Category" />
+
+        <TextView
+            android:id="@+id/txtAmount"
+            style="@style/AppTheme.PrimaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_4dp"
+            android:layout_weight="0.33"
+            android:gravity="center"
+            tools:text="PKR 0.00" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

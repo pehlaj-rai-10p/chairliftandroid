@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pehlaj.chairlift">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name="com.pehlaj.chairlift.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.pehlaj.chairlift.activities.HomeActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.pehlaj.chairlift.activities.BusListActivity"
+            android:parentActivityName=".activities.HomeActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.pehlaj.chairlift.activities.EmailValidationActivity"
+            android:parentActivityName="com.pehlaj.chairlift.activities.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.pehlaj.chairlift.activities.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:parentActivityName=".activities.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.BusDetailsActivity"
+            android:parentActivityName=".activities.BusListActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:parentActivityName=".activities.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.CodeVerificationActivity"
+            android:parentActivityName=".activities.ForgotPasswordActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.ChangePasswordActivity"
+            android:parentActivityName=".activities.CodeVerificationActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".activities.BookRideActivity"
+            android:parentActivityName=".activities.BusListActivity"
+            android:screenOrientation="portrait"/>
+
+    </application>
+
+</manifest>

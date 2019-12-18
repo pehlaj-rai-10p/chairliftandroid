@@ -162,8 +162,8 @@ public class BookRideActivity extends AppCompatActivity {
 
     private void bookRide(final int busId, Location pickup, Location dropOff) {
 
-        pickup = new Location("67.0559513", "24.8693563"); //dummy data
-        dropOff = new Location("67.0394186", "24.8438739"); //dummy data
+        pickup = new Location(67.0559513, 24.8693563); //dummy data
+        dropOff = new Location(67.0394186, 24.8438739); //dummy data
 
         if (busId < 0 || pickup == null || dropOff == null) {
             return;

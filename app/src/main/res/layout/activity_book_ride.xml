@@ -18,7 +18,7 @@
         android:padding="@dimen/_10sdp">
 
         <EditText
-            android:id="@+id/eTxtUsername"
+            android:id="@+id/eTxtPickup"
             style="@style/CustomEditText"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/_15sdp"
@@ -36,7 +36,7 @@
         android:paddingEnd="@dimen/_10sdp">
 
         <EditText
-            android:id="@+id/eTxtToken"
+            android:id="@+id/eTxtDropoff"
             style="@style/CustomEditText"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/space_6sdp"

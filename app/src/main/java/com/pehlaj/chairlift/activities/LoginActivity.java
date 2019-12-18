@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView txtTitle;
     private TextView txtRegister;
     private TextView txtForgotPassword;
-    private EditText eTxtToken;
-    private EditText eTxtNumber;
+    private EditText eTxtPassword;
+    private EditText eTxtUsername;
 
     private boolean shouldExit;
 
@@ -77,8 +77,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onLoginClick() {
 
-        String userName = eTxtNumber.getText().toString().trim();
-        String password = eTxtToken.getText().toString().trim();
+        String userName = eTxtUsername.getText().toString().trim();
+        String password = eTxtPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(userName)) {
             Utils.showToast(this, getString(R.string.err_number));
@@ -165,8 +165,8 @@ public class LoginActivity extends AppCompatActivity {
         txtRegister = findViewById(R.id.txtRegister);
         txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
-        eTxtToken = findViewById(R.id.eTxtToken);
-        eTxtNumber = findViewById(R.id.eTxtNumber);
+        eTxtUsername = findViewById(R.id.eTxtUsername);
+        eTxtPassword = findViewById(R.id.eTxtPassword);
 
         txtTitle.setText(getString(R.string.login));
     }

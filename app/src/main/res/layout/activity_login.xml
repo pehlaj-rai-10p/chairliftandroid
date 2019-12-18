@@ -41,11 +41,11 @@
             android:layout_marginTop="@dimen/_10sdp">
 
             <EditText
-                android:id="@+id/eTxtNumber"
+                android:id="@+id/eTxtUsername"
                 style="@style/CustomEditText"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:hint="@string/mobile_number"
+                android:hint="@string/username"
                 android:inputType="textEmailAddress"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -56,7 +56,7 @@
             android:layout_marginTop="@dimen/_10sdp">
 
             <EditText
-                android:id="@+id/eTxtToken"
+                android:id="@+id/eTxtPassword"
                 style="@style/CustomEditText"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/space_6sdp"

@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.pehlaj.chairlift.R;
-import com.pehlaj.chairlift.config.AppConfig;
 import com.pehlaj.chairlift.constants.Constants;
 import com.pehlaj.chairlift.constants.KeyConstants;
 import com.pehlaj.chairlift.entities.ApiResponse;
@@ -48,7 +47,7 @@ public class BookRideActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            navigateBack();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -126,18 +125,6 @@ public class BookRideActivity extends AppCompatActivity {
         imgSignOut.setOnClickListener(signOutClickListener);
     }
 
-    private void navigateBack() {
-
-        boolean isLoggedIn = PreferenceUtility.getBoolean(this, Utils.LOGIN_STATUS, false);
-
-        if (!isLoggedIn || AppConfig.getInstance().isAppRunning(this)) {
-            finish();
-            return;
-        }
-
-        showMessages();
-    }
-
     private final View.OnClickListener signOutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -155,21 +142,12 @@ public class BookRideActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showMessages() {
-
-        PreferenceUtility.setBoolean(this, Utils.LOGIN_STATUS, true);
-        Intent intent = new Intent(this, BusListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
-    }
-
     private final View.OnClickListener btnBackClickListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View view) {
 
-            navigateBack();
+            finish();
         }
     };
 

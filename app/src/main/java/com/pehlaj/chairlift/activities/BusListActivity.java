@@ -138,15 +138,17 @@ public class BusListActivity extends AppCompatActivity implements BusCallback {
 
     private void setListeners() {
 
-        imgMenu.setOnClickListener(signOutClickListener);
+        imgMenu.setOnClickListener(backClickListener);
         imgSignOut.setOnClickListener(signOutClickListener);
-        txtTitleLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        txtTitleLeft.setOnClickListener(backClickListener);
     }
+
+    private final View.OnClickListener backClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+    };
 
     private final View.OnClickListener signOutClickListener = new View.OnClickListener() {
         @Override

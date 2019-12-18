@@ -2,6 +2,8 @@ package com.pehlaj.chairlift.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.pehlaj.chairlift.R;
 import com.pehlaj.chairlift.constants.Constants;
@@ -83,7 +86,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private void showBusList() {
 
-        PreferenceUtility.setBoolean(this, Utils.LOGIN_STATUS, false);
         Intent intent = new Intent(this, BusListActivity.class);
         startActivity(intent);
     }
@@ -173,6 +175,14 @@ public class HomeActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         imgSearch = findViewById(R.id.imgSearch);
+
+        TextView txtTitle = findViewById(R.id.txtTitle);
+        if (txtTitle != null) {
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+            int actionBarSize = (int) styledAttributes.getDimension(0, 0);
+            txtTitle.setTextColor(Color.WHITE);
+            txtTitle.setTranslationX(-1 * (actionBarSize - (actionBarSize / 3)));
+        }
 
         imgSignOut = findViewById(R.id.imgSignOut);
         frameLayout = findViewById(R.id.frameLayout);

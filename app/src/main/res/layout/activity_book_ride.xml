@@ -14,15 +14,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
-        android:layout_marginTop="@dimen/_10sdp">
+        android:layout_marginTop="@dimen/_10sdp"
+        android:padding="@dimen/_10sdp">
 
         <EditText
-            android:id="@+id/eTxtNumber"
+            android:id="@+id/eTxtUsername"
             style="@style/CustomEditText"
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/_15sdp"
-            android:hint="@string/mobile_number"
-            android:inputType="textEmailAddress" />
+            android:hint="@string/mobile_number" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -31,7 +31,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/layoutPickup"
-        android:layout_marginTop="@dimen/_10sdp">
+        android:layout_marginTop="@dimen/_10sdp"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp">
 
         <EditText
             android:id="@+id/eTxtToken"
@@ -43,22 +45,10 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <Button
-        android:id="@+id/btnBook"
-        style="@style/CustomButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutDropOff"
-        android:layout_marginStart="@dimen/_50sdp"
-        android:layout_marginTop="@dimen/_25sdp"
-        android:layout_marginEnd="@dimen/_50sdp"
-        android:background="@color/green"
-        android:text="@string/book_ride" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/layoutDropOff"
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
@@ -120,7 +110,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnBack"
+        android:id="@+id/btnBook"
         style="@style/CustomButton"
         android:layout_width="@dimen/_150sdp"
         android:layout_height="wrap_content"
@@ -129,7 +119,7 @@
         android:layout_marginTop="@dimen/space_10sdp"
         android:layout_marginBottom="@dimen/_25sdp"
         android:background="@color/green"
-        android:text="@string/back"
+        android:text="@string/book_ride"
         android:textSize="@dimen/text_size_medium" />
 
 </RelativeLayout>

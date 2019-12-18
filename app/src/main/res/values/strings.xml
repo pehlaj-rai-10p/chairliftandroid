@@ -82,6 +82,7 @@
     <string name="err_username">Please enter email.</string>
     <string name="err_invalid_username">Please enter valid email.</string>
     <string name="bus_details">Bus Details</string>
+    <string name="booking_details">Booking Details</string>
     <string name="already_have_an_account">Already Have an Account?</string>
     <string name="logout">LogOut</string>
     <string name="messages">Bus List</string>

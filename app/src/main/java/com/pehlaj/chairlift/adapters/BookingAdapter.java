@@ -1,6 +1,7 @@
 package com.pehlaj.chairlift.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.pehlaj.chairlift.constants.Constants;
 import com.pehlaj.chairlift.entities.Booking;
+import com.pehlaj.chairlift.interfaces.ItemCallback;
 import com.pehlaj.chairlift.viewholders.HeaderViewHolder;
 import com.pehlaj.chairlift.viewholders.BookingViewHolder;
 import com.pehlaj.chairlift.R;
@@ -25,10 +27,13 @@ public class BookingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 	private int                           lastPosition = -1;
 
-    public BookingAdapter(Context context, List<Booking> list) {
+	private final ItemCallback itemCallback;
 
-        this.context = context;
+    public BookingAdapter(Context context, List<Booking> list, ItemCallback itemCallback) {
+
         this.list = list;
+        this.context = context;
+        this.itemCallback = itemCallback;
     }
 
     @Override
@@ -36,8 +41,9 @@ public class BookingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return position == 0 ? Constants.VIEW_TYPE_HEADER : Constants.VIEW_TYPE_DEFAULT;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == Constants.VIEW_TYPE_HEADER) {
             View view = LayoutInflater.from(context).inflate(R.layout.item_booking_header, parent, false);
             return new HeaderViewHolder(view);
@@ -47,15 +53,27 @@ public class BookingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
 
         if (viewHolder instanceof BookingViewHolder) {
             BookingViewHolder holder = (BookingViewHolder) viewHolder;
-            Booking commission = list.get(position - 1);
+            final Booking booking = list.get(position - 1);
 
-            holder.txtName.setText(String.valueOf(commission.getBusId()));
-            holder.txtAmount.setText(String.valueOf(commission.getRiderId()));
-            holder.txtCategory.setText(commission.getStatus());
+            holder.txtName.setText(String.valueOf(booking.getBusId()));
+            holder.txtAmount.setText(String.valueOf(booking.getRiderId()));
+            holder.txtCategory.setText(booking.getStatus());
+
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (itemCallback == null) {
+                        return;
+                    }
+
+                    itemCallback.onItemClick(booking);
+                }
+            });
         }
 
     }

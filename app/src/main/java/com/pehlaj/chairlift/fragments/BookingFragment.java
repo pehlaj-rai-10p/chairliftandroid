@@ -1,5 +1,6 @@
 package com.pehlaj.chairlift.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -20,12 +21,18 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.pehlaj.chairlift.activities.BookingDetailsActivity;
+import com.pehlaj.chairlift.activities.BusDetailsActivity;
 import com.pehlaj.chairlift.adapters.BookingAdapter;
 import com.pehlaj.chairlift.components.RecyclerVerticalSpacingItemDecoration;
 import com.pehlaj.chairlift.components.SpaceItemDecoration;
+import com.pehlaj.chairlift.constants.Constants;
 import com.pehlaj.chairlift.constants.KeyConstants;
+import com.pehlaj.chairlift.entities.BaseEntity;
 import com.pehlaj.chairlift.entities.BookingResponse;
 import com.pehlaj.chairlift.entities.Booking;
+import com.pehlaj.chairlift.entities.Bus;
+import com.pehlaj.chairlift.interfaces.ItemCallback;
 import com.pehlaj.chairlift.interfaces.Services;
 import com.pehlaj.chairlift.interfaces.WebServiceCallBack;
 import com.pehlaj.chairlift.network.ApiClient;
@@ -43,7 +50,7 @@ import java.util.List;
  * @since 17-June-17
  */
 
-public class BookingFragment extends Fragment {
+public class BookingFragment extends Fragment implements ItemCallback {
 
     private static final HashMap<String, String> BOOKING_MAP = new HashMap<>();
     private String bookingType;
@@ -246,7 +253,7 @@ public class BookingFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(verticalSpacingItemDecoration);
         recyclerView.addItemDecoration(spaceItemDecoration);
-        BookingAdapter adapter = new BookingAdapter(getContext(), productCommissionList);
+        BookingAdapter adapter = new BookingAdapter(getContext(), productCommissionList, this);
 
         showList(true);
         recyclerView.setAdapter(adapter);
@@ -280,5 +287,23 @@ public class BookingFragment extends Fragment {
                 Utils.showToast(getContext(), errorMessage);
             }
         }, true));
+    }
+
+    @Override
+    public void onItemClick(BaseEntity entity) {
+
+        if (!(entity instanceof Booking)) {
+            return;
+        }
+
+        showBookingDetailsScreen((Booking) entity);
+
+    }
+
+    private void showBookingDetailsScreen(Booking booking) {
+
+        Intent intent = new Intent(getContext(), BookingDetailsActivity.class);
+        intent.putExtra(Constants.EXTRA_BOOKING, booking);
+        startActivity(intent);
     }
 }

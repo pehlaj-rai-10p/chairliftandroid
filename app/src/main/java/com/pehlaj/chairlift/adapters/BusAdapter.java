@@ -52,18 +52,6 @@ public class BusAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         setAnimation(holder.view, position);
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (itemCallback == null) {
-                    return;
-                }
-
-                itemCallback.onItemClick(bus);
-            }
-        });
-
         holder.bookRide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

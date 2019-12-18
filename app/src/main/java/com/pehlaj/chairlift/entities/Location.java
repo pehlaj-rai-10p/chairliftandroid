@@ -14,13 +14,13 @@ import com.pehlaj.chairlift.constants.KeyConstants;
 
 public class Location implements Parcelable {
 
-    private String lat;
-    private String lng;
+    private double lat;
+    private double lng;
 
     public Location() {
     }
 
-    public Location(String lat, String lng) {
+    public Location(double lat, double lng) {
         this.lat = lat;
         this.lng = lng;
     }
@@ -43,8 +43,8 @@ public class Location implements Parcelable {
     }
 
     protected Location(Parcel in) {
-        lat = in.readString();
-        lng = in.readString();
+        lat = in.readDouble();
+        lng = in.readDouble();
     }
 
     public static final Creator<Location> CREATOR = new Creator<Location>() {
@@ -66,7 +66,15 @@ public class Location implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(lat);
-        dest.writeString(lng);
+        dest.writeDouble(lat);
+        dest.writeDouble(lng);
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
     }
 }

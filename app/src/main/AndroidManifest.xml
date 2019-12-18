@@ -25,8 +25,8 @@
 
         <activity
             android:name="com.pehlaj.chairlift.activities.HomeActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.pehlaj.chairlift.activities.BusListActivity"
@@ -77,9 +77,15 @@
             android:parentActivityName=".activities.CodeVerificationActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".activities.BookRideActivity"
+        <activity
+            android:name=".activities.BookRideActivity"
             android:parentActivityName=".activities.BusListActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.BookingDetailsActivity"
+            android:parentActivityName=".activities.HomeActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 

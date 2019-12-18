@@ -103,7 +103,7 @@ public class BusListActivity extends AppCompatActivity implements BusCallback {
         txtTitle.setText(getString(R.string.bus_list));
         txtTitleLeft.setVisibility(View.VISIBLE);
         imgMenu.setImageResource(R.drawable.arrow_left_blue);
-        imgMenu.setVisibility(View.INVISIBLE);
+        imgMenu.setVisibility(View.VISIBLE);
         imgSignOut.setVisibility(View.GONE);
 
         txtTitle.setText(getString(R.string.bus_list));

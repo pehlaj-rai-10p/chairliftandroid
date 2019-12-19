@@ -82,10 +82,10 @@ public abstract class BaseActivityLocation extends AppCompatActivity implements 
                 if (!SmartLocationManager.checkPermission(BaseActivityLocation.this)) {
                     SmartLocationManager.requestPermission(BaseActivityLocation.this, this);
                 } else {
-                    mLocationManager = new SmartLocationManager(BaseActivityLocation.this, SmartLocationManager.FETCH_LOCATION_BETWEEN_INTERVAL, this, SmartLocationManager.ALL_PROVIDERS, 2 * 1000, 1 * 1000, SmartLocationManager.LOCATION_PROVIDER_ALL_RESTRICTION, SmartLocationManager.ANY_API); // init location manager
+                    mLocationManager = new SmartLocationManager(BaseActivityLocation.this, SmartLocationManager.FETCH_LOCATION_ONCE, this, SmartLocationManager.ALL_PROVIDERS, 2 * 1000, 1 * 1000, SmartLocationManager.LOCATION_PROVIDER_ALL_RESTRICTION, SmartLocationManager.ANY_API); // init location manager
                 }
             } else {
-                mLocationManager = new SmartLocationManager(BaseActivityLocation.this, SmartLocationManager.FETCH_LOCATION_BETWEEN_INTERVAL, this, SmartLocationManager.ALL_PROVIDERS, 2 * 1000, 1 * 1000, SmartLocationManager.LOCATION_PROVIDER_ALL_RESTRICTION, SmartLocationManager.ANY_API); // init location manager
+                mLocationManager = new SmartLocationManager(BaseActivityLocation.this, SmartLocationManager.FETCH_LOCATION_ONCE, this, SmartLocationManager.ALL_PROVIDERS, 2 * 1000, 1 * 1000, SmartLocationManager.LOCATION_PROVIDER_ALL_RESTRICTION, SmartLocationManager.ANY_API); // init location manager
             }
         } catch (Exception e) {
             e.printStackTrace();

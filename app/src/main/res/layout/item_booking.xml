@@ -96,10 +96,11 @@
             android:id="@+id/btnTrack"
             style="@style/CustomButton"
             android:layout_width="@dimen/_100sdp"
-            android:layout_height="@dimen/_24sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_below="@id/txtBookingTime"
             android:layout_centerHorizontal="true"
+            android:gravity="center"
             android:background="@color/green"
             android:padding="4dp"
             android:text="@string/track_ride" />

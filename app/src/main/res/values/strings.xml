@@ -92,8 +92,11 @@
 
     <string name="home">Home</string>
     <string name="book">Book</string>
+    <string name="track_ride">Track Ride</string>
     <string name="book_ride">Book Ride</string>
+    <string name="book_another_ride">Book Another Ride</string>
     <string name="bus_list">Bus List</string>
+    <string name="bus_info">Bus Info</string>
     <string name="booking_type">Booking Type</string>
 
 

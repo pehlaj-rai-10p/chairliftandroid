@@ -9,20 +9,14 @@ import java.util.List;
  * @since 6/4/2017.
  */
 
-public class ApiResponse {
+public class ApiResponse extends BaseEntity {
 
     protected JsonObject data;
-
-    protected Meta meta;
 
     public ApiResponse() {
     }
 
     public JsonObject getData() {
         return data;
-    }
-
-    public Meta getMeta() {
-        return meta;
     }
 }

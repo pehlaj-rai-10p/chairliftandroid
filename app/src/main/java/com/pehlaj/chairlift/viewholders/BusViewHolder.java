@@ -12,7 +12,7 @@ import com.pehlaj.chairlift.entities.Bus;
  */
 public class BusViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView txtTitle, txtDesc, txtTime, txtStatus, txtSeats;
+    private TextView txtDriverName, txtRegistrationNum, txtChasisNum, txtBusStatus, txtSeats;
 
     public View view;
     public View bookRide;
@@ -26,20 +26,20 @@ public class BusViewHolder extends RecyclerView.ViewHolder {
     private void initUI() {
 
         bookRide = view.findViewById(R.id.btnBook);
-        txtDesc = view.findViewById(R.id.txtDesc);
-        txtTime = view.findViewById(R.id.txtTime);
-        txtTitle = view.findViewById(R.id.txtTitle);
         txtSeats = view.findViewById(R.id.txtSeats);
-        txtStatus = view.findViewById(R.id.txtStatus);
+        txtBusStatus = view.findViewById(R.id.txtBusStatus);
+        txtChasisNum = view.findViewById(R.id.txtChasisNum);
+        txtDriverName = view.findViewById(R.id.txtDriverName);
+        txtRegistrationNum = view.findViewById(R.id.txtRegistrationNum);
     }
 
     public void setData(Bus bus) {
 
-        txtDesc.setText(bus.getRegistrationNumber());
-        txtTime.setText(bus.getChasisNumber());
-        txtTitle.setText(bus.getDriverName());
-        txtStatus.setText(bus.getStatus());
-        txtSeats.setText(String.format("Seats remaining: %s", bus.getAvailableSeats()));
+        txtSeats.setText(bus.getSeatsAvailability());
+        txtBusStatus.setText(bus.getStatus());
+        txtChasisNum.setText(bus.getChasisNumber());
+        txtDriverName.setText(bus.getDriverName());
+        txtRegistrationNum.setText(bus.getRegistrationNumber());
     }
 
 }

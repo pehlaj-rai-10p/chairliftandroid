@@ -7,24 +7,23 @@ import android.widget.TextView;
 import com.pehlaj.chairlift.R;
 
 /**
- * Created by 8/22/2016.
+ * Created by 19th Dec, 2019.
  */
 public class BookingViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView txtName, txtAmount, txtCategory;
+    public final TextView txtTrackingNum, txtStatus, txtPickup, txtDropOff, txtBookingTime, txtDropoffTime;
 
     public View view;
 
     public BookingViewHolder(View view) {
         super(view);
         this.view = view;
-        initUI();
-    }
 
-    private void initUI() {
-
-        txtName = view.findViewById(R.id.txtName);
-        txtAmount = view.findViewById(R.id.txtAmount);
-        txtCategory = view.findViewById(R.id.txtCategory);
+        txtStatus = view.findViewById(R.id.txtStatus);
+        txtPickup = view.findViewById(R.id.txtPickup);
+        txtDropOff = view.findViewById(R.id.txtDropoff);
+        txtBookingTime = view.findViewById(R.id.txtBookingTime);
+        txtDropoffTime = view.findViewById(R.id.txtDropoffTime);
+        txtTrackingNum = view.findViewById(R.id.txtTrackingNum);
     }
 }

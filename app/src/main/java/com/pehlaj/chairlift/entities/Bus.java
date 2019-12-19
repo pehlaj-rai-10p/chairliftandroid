@@ -32,7 +32,7 @@ public class Bus implements Parcelable {
     public Bus() {
     }
 
-    public String toString () {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ID: ");
         sb.append(id);
@@ -91,6 +91,10 @@ public class Bus implements Parcelable {
 
     public String getCapacity() {
         return capacity;
+    }
+
+    public String getSeatsAvailability() {
+        return String.format("Seats remaining: %s", availableSeats);
     }
 
     public String getAvailableSeats() {

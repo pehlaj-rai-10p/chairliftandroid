@@ -197,7 +197,7 @@ public class BookRideActivity extends AppCompatActivity {
                     return;
                 }
 
-                Utils.showToast(BookRideActivity.this, ((ApiResponse) response).getMeta().getMessage());
+                Utils.showToast(BookRideActivity.this, ((ApiResponse) response).getMessage());
             }
 
             @Override

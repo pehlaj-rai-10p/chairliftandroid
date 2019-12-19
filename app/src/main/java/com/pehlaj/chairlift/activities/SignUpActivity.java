@@ -204,12 +204,12 @@ public class SignUpActivity extends AppCompatActivity {
 
                 Log.w("RESPONSE", response.toString());
 
-                if (((BaseEntity) response).isSuccessful()) {
+                if (((BaseEntity) response).isSuccess()) {
                     showMessages(username, token);
                     return;
                 }
 
-                Utils.showToast(SignUpActivity.this, ((BaseEntity) response).getError());
+                Utils.showToast(SignUpActivity.this, ((BaseEntity) response).getMessage());
             }
 
             @Override

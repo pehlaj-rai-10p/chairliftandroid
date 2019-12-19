@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.gson.JsonObject;
+import com.pehlaj.chairlift.constants.Constants;
 import com.pehlaj.chairlift.constants.KeyConstants;
 
 /**
@@ -32,12 +33,16 @@ public class Location implements Parcelable {
         return jsonObject;
     }
 
+    public String getLatLng() {
+        return String.format(Constants.FORMAT_SCommaS, lat, lng);
+    }
+
     @NonNull
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("\nLAT: ");
         sb.append(lat);
-        sb.append(", \tLNG: ");
+        sb.append(", \nLNG: ");
         sb.append(lng);
         return sb.toString();
     }

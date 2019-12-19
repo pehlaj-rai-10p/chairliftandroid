@@ -8,48 +8,102 @@
     android:layout_gravity="center"
     cardView:cardCornerRadius="4dp">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:background="@android:color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/element_spacing"
-        android:paddingLeft="@dimen/element_spacing"
-        android:paddingRight="@dimen/element_spacing"
-        android:paddingTop="@dimen/element_spacing">
+        android:paddingStart="@dimen/element_spacing"
+        android:paddingTop="@dimen/element_spacing"
+        android:paddingEnd="@dimen/element_spacing"
+        android:paddingBottom="@dimen/element_spacing">
 
         <TextView
-            android:id="@+id/txtName"
+            android:id="@+id/txtTrackingNum"
             style="@style/AppTheme.PrimaryText"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.34"
-            android:gravity="center"
-            android:textSize="@dimen/text_size_small"
-            tools:text="Test Name" />
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/txtStatus"
+            android:gravity="start|center_vertical"
+            tools:text="Tracking No" />
 
         <TextView
-            android:id="@+id/txtCategory"
-            style="@style/AppTheme.PrimaryText"
-            android:layout_width="0dp"
+            android:id="@+id/txtStatus"
+            style="@style/AppTheme.MediumText"
+            android:layout_width="@dimen/_75sdp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_4dp"
-            android:layout_weight="0.33"
-            android:gravity="center"
-            tools:text="Category" />
+            android:layout_alignParentEnd="true"
+            android:gravity="end|center_vertical"
+            android:textStyle="bold"
+            tools:text="Idle" />
+
+        <View
+            android:id="@+id/viewCenter"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true" />
 
         <TextView
-            android:id="@+id/txtAmount"
-            style="@style/AppTheme.PrimaryText"
-            android:layout_width="0dp"
+            android:id="@+id/txtPickup"
+            style="@style/AppTheme.XSmallText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_4dp"
-            android:layout_weight="0.33"
-            android:gravity="center"
-            tools:text="PKR 0.00" />
+            android:layout_below="@+id/txtTrackingNum"
+            android:layout_marginEnd="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_toStartOf="@+id/viewCenter"
+            android:gravity="start|center_vertical"
+            tools:text="Pickup 0" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txtDropoff"
+            style="@style/AppTheme.XSmallText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtTrackingNum"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_toEndOf="@+id/viewCenter"
+            android:gravity="end|center_vertical"
+            tools:text="Dropoff 0" />
+
+        <TextView
+            android:id="@+id/txtBookingTime"
+            style="@style/AppTheme.XSmallText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtPickup"
+            android:layout_marginEnd="@dimen/_1sdp"
+            android:layout_toStartOf="@+id/viewCenter"
+            android:gravity="start|center_vertical"
+            tools:text="Sunday, 10 Jun, 09:00AM" />
+
+        <TextView
+            android:id="@+id/txtDropoffTime"
+            style="@style/AppTheme.XSmallText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtPickup"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_toEndOf="@+id/viewCenter"
+            android:gravity="end|center_vertical"
+            tools:text="Sunday, 10 Jun, 09:30AM" />
+
+        <Button
+            android:id="@+id/btnTrack"
+            style="@style/CustomButton"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_below="@id/txtBookingTime"
+            android:layout_centerHorizontal="true"
+            android:background="@color/green"
+            android:padding="4dp"
+            android:text="@string/track_ride" />
+
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

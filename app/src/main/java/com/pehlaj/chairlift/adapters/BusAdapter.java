@@ -36,6 +36,7 @@ public class BusAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.itemCallback = itemCallback;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_bus_list, parent, false);
@@ -51,6 +52,18 @@ public class BusAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.setData(bus);
 
         setAnimation(holder.view, position);
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (itemCallback == null) {
+                    return;
+                }
+
+                itemCallback.onItemClick(bus);
+            }
+        });
 
         holder.bookRide.setOnClickListener(new View.OnClickListener() {
             @Override

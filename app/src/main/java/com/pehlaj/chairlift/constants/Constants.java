@@ -32,6 +32,9 @@ public final class Constants {
 	public static final String IS_APP_RUNNING			= "isAppRunning";
 
 	public static final String FORMAT_SS				= "%s%s";
+	public static final String FORMAT_SCommaS			= "%s, %s";
+
+	public static final String NA						= "N/A";
 
 	private Constants() {
 

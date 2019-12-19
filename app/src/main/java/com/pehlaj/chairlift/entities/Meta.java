@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 public class Meta {
 
-    protected int status;
+    private int status;
     private String stack;
     private String message;
 

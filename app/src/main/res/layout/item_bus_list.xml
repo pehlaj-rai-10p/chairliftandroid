@@ -17,16 +17,16 @@
         android:orientation="vertical"
         android:paddingStart="@dimen/element_spacing"
         android:paddingTop="@dimen/element_spacing"
-        android:paddingRight="@dimen/element_spacing"
+        android:paddingEnd="@dimen/element_spacing"
         android:paddingBottom="@dimen/element_spacing">
 
         <TextView
-            android:id="@+id/txtTitle"
+            android:id="@+id/txtDriverName"
             style="@style/AppTheme.PrimaryText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/txtStatus"
+            android:layout_toStartOf="@+id/txtBusStatus"
             android:gravity="start|center_vertical"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
@@ -34,36 +34,37 @@
             tools:text="Title" />
 
         <TextView
-            android:id="@+id/txtDesc"
+            android:id="@+id/txtRegistrationNum"
             style="@style/AppTheme.PrimaryText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtTitle"
+            android:layout_below="@+id/txtDriverName"
             android:layout_marginTop="@dimen/_5sdp"
-            android:layout_toStartOf="@+id/btnBook"
+            android:layout_toStartOf="@+id/txtChasisNum"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold"
             tools:text="Test Name" />
 
         <TextView
-            android:id="@+id/txtTime"
+            android:id="@+id/txtChasisNum"
             style="@style/AppTheme.PrimaryText"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/_100sdp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtDesc"
+            android:layout_below="@+id/txtDriverName"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_toStartOf="@+id/btnBook"
+            android:gravity="end|center_vertical"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold"
             tools:text="Time" />
 
         <TextView
-            android:id="@+id/txtStatus"
+            android:id="@+id/txtBusStatus"
             style="@style/AppTheme.PrimaryText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/_5sdp"
             android:gravity="end|center_vertical"
             android:textStyle="bold"
             tools:text="Status" />
@@ -73,10 +74,11 @@
             style="@style/AppTheme.PrimaryText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/btnBook"
-            android:layout_below="@+id/txtTime"
+            android:layout_below="@+id/txtRegistrationNum"
+            android:layout_alignTop="@+id/btnBook"
+            android:layout_alignBottom="@+id/btnBook"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_3sdp"
+            android:layout_toStartOf="@+id/btnBook"
             android:gravity="start|center_vertical"
             android:textStyle="bold"
             tools:text="Seats" />
@@ -86,8 +88,9 @@
             style="@style/CustomButton"
             android:layout_width="@dimen/_70sdp"
             android:layout_height="30dp"
-            android:layout_below="@id/txtTime"
+            android:layout_below="@id/txtRegistrationNum"
             android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@color/green"
             android:padding="4dp"
             android:text="@string/book" />

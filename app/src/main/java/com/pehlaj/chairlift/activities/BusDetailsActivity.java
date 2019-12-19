@@ -18,16 +18,18 @@ import com.pehlaj.chairlift.utils.Utils;
 
 public class BusDetailsActivity extends AppCompatActivity {
 
-	private Toolbar toolbar;
+    private Toolbar toolbar;
 
     private Button btnBack;
     private ImageView imgMenu;
     private TextView txtTitle;
     private TextView txtTitleLeft;
-    private TextView txtMessageTitle;
-    private TextView txtMessageStatus;
-    private TextView txtMessageTime;
-    private TextView txtMessageBody;
+
+    private TextView txtSeats;
+    private TextView txtBusStatus;
+    private TextView txtChasisNum;
+    private TextView txtDriverName;
+    private TextView txtRegistrationNum;
 
     private ImageView imgSignOut;
 
@@ -35,7 +37,7 @@ public class BusDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
@@ -54,10 +56,10 @@ public class BusDetailsActivity extends AppCompatActivity {
 
         setListeners();
 
-        populateMessageDetails();
+        populateDetails();
     }
 
-    private void populateMessageDetails() {
+    private void populateDetails() {
 
         if (getIntent() == null || !getIntent().hasExtra(Constants.EXTRA_BUS)) {
             return;
@@ -65,14 +67,15 @@ public class BusDetailsActivity extends AppCompatActivity {
 
         bus = getIntent().getParcelableExtra(Constants.EXTRA_BUS);
 
-        if(bus == null) {
+        if (bus == null) {
             return;
         }
 
-        txtMessageTitle.setText(bus.getRegistrationNumber());
-        txtMessageTime.setText(bus.getDriverName());
-        txtMessageBody.setText(bus.getChasisNumber());
-        txtMessageStatus.setText(bus.getStatus());
+        txtSeats.setText(bus.getSeatsAvailability());
+        txtBusStatus.setText(bus.getStatus());
+        txtChasisNum.setText(bus.getChasisNumber());
+        txtDriverName.setText(bus.getDriverName());
+        txtRegistrationNum.setText(bus.getRegistrationNumber());
 
     }
 
@@ -84,10 +87,11 @@ public class BusDetailsActivity extends AppCompatActivity {
         imgMenu = findViewById(R.id.imgMenu);
         txtTitle = findViewById(R.id.txtTitle);
         txtTitleLeft = findViewById(R.id.txtTitleLeft);
-        txtMessageTime = findViewById(R.id.txtMessageTime);
-        txtMessageBody = findViewById(R.id.txtMessageBody);
-        txtMessageTitle = findViewById(R.id.txtMessageTitle);
-        txtMessageStatus = findViewById(R.id.txtMessageStatus);
+        txtSeats = findViewById(R.id.txtSeats);
+        txtBusStatus = findViewById(R.id.txtBusStatus);
+        txtChasisNum = findViewById(R.id.txtChasisNum);
+        txtDriverName = findViewById(R.id.txtDriverName);
+        txtRegistrationNum = findViewById(R.id.txtRegistrationNum);
 
         imgSignOut = findViewById(R.id.imgSignOut);
 

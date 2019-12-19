@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".activities.BusDetailsActivity">
+
+    <include layout="@layout/layout_toolbar_home" />
+
+    <include
+        android:id="@+id/bookingDetails"
+        layout="@layout/item_booking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar" />
+
+    <TextView
+        android:id="@+id/txtBusInfo"
+        style="@style/AppTheme.LargeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bookingDetails"
+        android:layout_margin="@dimen/_10sdp"
+        android:text="@string/bus_info"
+        android:textAllCaps="true"
+        android:textStyle="normal" />
+
+    <include
+        layout="@layout/item_bus_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtBusInfo" />
+
+    <Button
+        android:id="@+id/btnTrackRide"
+        style="@style/CustomButton"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnBookAnotherRide"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/space_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@color/green"
+        android:text="@string/track_ride"
+        android:textSize="@dimen/text_size_medium" />
+
+    <Button
+        android:id="@+id/btnBookAnotherRide"
+        style="@style/CustomButton"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/space_10sdp"
+        android:layout_marginBottom="@dimen/_25sdp"
+        android:background="@color/green"
+        android:text="@string/book_another_ride"
+        android:textSize="@dimen/text_size_medium" />
+
+</RelativeLayout>

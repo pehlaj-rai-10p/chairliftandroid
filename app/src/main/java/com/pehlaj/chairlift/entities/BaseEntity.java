@@ -2,8 +2,7 @@ package com.pehlaj.chairlift.entities;
 
 import android.text.TextUtils;
 
-import com.google.gson.annotations.SerializedName;
-import com.pehlaj.chairlift.constants.KeyConstants;
+import com.pehlaj.chairlift.constants.Constants;
 
 /**
  * @author Pehlaj Rai
@@ -12,24 +11,17 @@ import com.pehlaj.chairlift.constants.KeyConstants;
 
 public class BaseEntity {
 
-    @SerializedName(KeyConstants.KEY_SUCCESS)
-    protected String success;
+    private Meta meta;
 
-    protected String error;
-
-    public BaseEntity(){
+    public BaseEntity() {
 
     }
 
     public boolean isSuccess() {
-        return !TextUtils.isEmpty(success);
+        return meta != null && (meta.getStatus() == 200 || meta.getStatus() == 201);
     }
 
-    public boolean isSuccessful() {
-        return isSuccess() && success.trim().equalsIgnoreCase("Record Inserted");
-    }
-
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return (meta == null || TextUtils.isEmpty(meta.getMessage())) ? Constants.UNKNOWN_ERROR : meta.getMessage();
     }
 }

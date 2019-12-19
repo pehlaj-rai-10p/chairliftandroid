@@ -3,6 +3,8 @@ package com.pehlaj.chairlift.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.pehlaj.chairlift.constants.Constants;
+
 /**
  * @author Pehlaj
  * @since 6/4/2017.
@@ -117,5 +119,13 @@ public class Booking extends BaseEntity implements Parcelable {
 
     public Location getDropoffLocation() {
         return dropoffLocation;
+    }
+
+    public String getPickupLatLng() {
+        return pickupLocation == null ? Constants.NA : pickupLocation.getLatLng();
+    }
+
+    public String getDropoffLatLng() {
+        return dropoffLocation == null ? Constants.NA : dropoffLocation.getLatLng();
     }
 }

@@ -6,6 +6,7 @@ import com.pehlaj.chairlift.constants.ServiceConstants;
 import com.pehlaj.chairlift.entities.ApiResponse;
 import com.pehlaj.chairlift.entities.BaseEntity;
 import com.pehlaj.chairlift.entities.BookingResponse;
+import com.pehlaj.chairlift.entities.BusDetails;
 import com.pehlaj.chairlift.entities.LoginResponse;
 import com.pehlaj.chairlift.entities.BusResponse;
 import com.pehlaj.chairlift.entities.RiderDetails;
@@ -67,7 +68,7 @@ public interface Services {
     Call<BookingResponse> getBookings(@Query(KeyConstants.KEY_STATUS) String status, @Query(KeyConstants.KEY_RIDER_ID) int riderId);
 
     @GET(ServiceConstants.BUS_DETAILS)
-    Call<BusResponse> getBusDetails(@Header(KeyConstants.AUTHORIZATION) String base64Auth, @Path(KeyConstants.KEY_ID) String id);
+    Call<BusDetails> getBusDetails(@Header(KeyConstants.AUTHORIZATION) String base64Auth, @Path(KeyConstants.KEY_ID) int id);
 
     @GET(ServiceConstants.RIDER_DETAILS)
     Call<BusResponse> getRiderDetails(@Header(KeyConstants.AUTHORIZATION) String base64Auth, @Path(KeyConstants.KEY_ID) String id);

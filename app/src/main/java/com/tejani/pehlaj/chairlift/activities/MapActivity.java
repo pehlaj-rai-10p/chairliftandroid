@@ -4,9 +4,14 @@ import android.Manifest;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+//import com.github.nkzawa.emitter.Emitter;
+//import com.github.nkzawa.engineio.client.transports.WebSocket;
+//import com.github.nkzawa.socketio.client.IO;
+//import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,8 +27,15 @@ import com.tejani.pehlaj.chairlift.R;
 import com.tejani.pehlaj.chairlift.utils.JsonUtility;
 import com.tejani.pehlaj.chairlift.utils.PreferenceUtility;
 
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import io.socket.client.IO;
+import io.socket.emitter.Emitter;
+import io.socket.engineio.client.Socket;
+import io.socket.engineio.client.transports.WebSocket;
 import meetmehdi.location.BaseActivityLocation;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -33,15 +45,136 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     private GoogleMap mMap;
     private Polyline line;
 
+    private io.socket.client.Socket socket;
+
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            Log.e("Socket.io", "" + args[0]);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String data = (String) args[0];
+//                    String username;
+//                    String message;
+//                    try {
+//                        username = data.getString("username");
+//                        message = data.getString("message");
+//                    } catch (JSONException e) {
+//                        return;
+//                    }
+
+                    // add the message to view
+                    //Log.e("Socket.io", "" + data);
+                }
+            });
+        }
+    };
+
     @Override
-    protected void onCreate (Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_maps);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager ().findFragmentById (R.id.map);
-        mapFragment.getMapAsync (this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
+        //setupSecketConnection();
+
+        try {
+            IO.Options opts = new IO.Options();
+
+            opts.secure = false;
+            opts.path = "/api/v1/bus";
+            opts.transports = new String[]{WebSocket.NAME};
+
+            socket = IO.socket("http://172.16.17.242:4003/", opts);
+
+            socket.on(Socket.EVENT_OPEN, listener).on(Socket.EVENT_DATA, listener).on("event", listener).on(Socket.EVENT_ERROR, listener).on(Socket.EVENT_HANDSHAKE, listener).on(Socket.EVENT_TRANSPORT, listener).on(Socket.EVENT_MESSAGE, listener).on(Socket.EVENT_CLOSE, listener).on(Socket.EVENT_PACKET, listener).on(Socket.EVENT_PING, listener);
+            socket.io().on(Socket.EVENT_OPEN, listener1).on(Socket.EVENT_DATA, dataListener).on("event", listener1).on(Socket.EVENT_ERROR, listener1).on(Socket.EVENT_HANDSHAKE, listener1).on(Socket.EVENT_TRANSPORT, listener1).on(Socket.EVENT_MESSAGE, listener1).on(Socket.EVENT_CLOSE, listener1).on(Socket.EVENT_PACKET, listener1).on(Socket.EVENT_PING, listener);
+
+            socket.connect();
+
+            socket.emit("event", "hi");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private Emitter.Listener dataListener = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.e("Socket.io", "Listener");
+        }
+
+    };
+
+    private Emitter.Listener listener = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.e("Socket.io", "Listener");
+       }
+
+    };
+
+    private Emitter.Listener listener1 = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.e("Socket.io", "Listener1");
+        }
+
+    };
+
+    private void setupSecketConnection() {
+        try {
+
+
+            IO.Options opts = new IO.Options();
+            opts.secure = false;
+            opts.path = "/api/v1/bus";
+            opts.transports = new String[]{WebSocket.NAME};
+
+            socket = IO.socket("http://172.16.17.242:4003/", opts);
+
+            //socket = IO.socket("http://172.16.17.242:4003/api/v1/bus/", );
+
+            //socket.on("info", onNewMessage);
+            //socket.on("event", onNewMessage);
+            //socket.on("event", onNewMessage);
+            //socket.io().on("/", onNewMessage);
+            //socket.io().on("info", onNewMessage);
+            //socket.io().on("event", onNewMessage);
+            socket.connect();
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+
+                    //socket.io().emit("event", "{\"content\": \"Test Message\"");
+                    if (socket.connected()) {
+                        //socket.emit("event", "{\"content\": \"Message sent from AndroidApp using Socket.IO\"");
+                    }
+                }
+            }, 5000, 30000);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        socket.disconnect();
+        //socket.off("event", onNewMessage);
     }
 
     protected void onStart() {
@@ -85,40 +218,39 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady (GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        postMapReady ();
+        postMapReady();
     }
 
     @AfterPermissionGranted(1)
-    private void postMapReady () {
+    private void postMapReady() {
 
         if (mMap == null) {
             return;
         }
 
-        String[] perms = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
         if (EasyPermissions.hasPermissions(this, perms)) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.setMapType (GoogleMap.MAP_TYPE_NORMAL);
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            float lat = PreferenceUtility.getFloat (this, "LAT", 0.0f);
-            float lng = PreferenceUtility.getFloat (this, "LNG", 0.0f);
+            float lat = PreferenceUtility.getFloat(this, "LAT", 0.0f);
+            float lng = PreferenceUtility.getFloat(this, "LNG", 0.0f);
 
             if (lat != 0.0f) {
-                LatLng latLng = new LatLng (lat, lat);
-                addMarker (latLng, "Test");
+                LatLng latLng = new LatLng(lat, lat);
+                addMarker(latLng, "Test");
             }
 
             initLocationFetching(this);
 
             //drawRoute ();
-        }
-        else {
-            EasyPermissions.requestPermissions (this, getString (R.string.permission_required), 1, perms);
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.permission_required), 1, perms);
         }
     }
 
@@ -127,21 +259,21 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         super.locationFetched(mLocal, oldLocation, time, locationProvider);
 
         //Toast.makeText(getApplication(), "Latitude : " + mLocal.getLatitude() + " Longitude : " + mLocal.getLongitude(), Toast.LENGTH_SHORT).show();
-        LatLng latLng = new LatLng (mLocal.getLatitude (), mLocal.getLongitude ());
-        addMarker (latLng, time);
-        PreferenceUtility.setFloat (this, "LAT", (float) mLocal.getLatitude ());
-        PreferenceUtility.setFloat (this, "LNG", (float) mLocal.getLongitude ());
+        LatLng latLng = new LatLng(mLocal.getLatitude(), mLocal.getLongitude());
+        addMarker(latLng, time);
+        PreferenceUtility.setFloat(this, "LAT", (float) mLocal.getLatitude());
+        PreferenceUtility.setFloat(this, "LNG", (float) mLocal.getLongitude());
 
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(latLng, 15);
         mMap.animateCamera(location);
 
-        drawRoute ();
+        drawRoute();
     }
 
-    private void drawRoute () {
+    private void drawRoute() {
 
         //String json = "[{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5162792,\"longitude\":13.3795345},{\"latitude\":52.5163651,\"longitude\":13.3808541},{\"latitude\":52.5180817,\"longitude\":13.3804464},{\"latitude\":52.5189292,\"longitude\":13.3802962},{\"latitude\":52.5206638,\"longitude\":13.3861149}]";
-        String json = "[{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5162792,\"longitude\":13.3795345},{\"latitude\":52.5163651,\"longitude\":13.3808541},{\"latitude\":52.5180817,\"longitude\":13.3804464},{\"latitude\":52.5189292,\"longitude\":13.3802962},{\"latitude\":52.5206638,\"longitude\":13.3861149}]";
+        String json = "[{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162792,\"longitude\":13.3795345},{\"latitude\":52.5163651,\"longitude\":13.3808541},{\"latitude\":52.5180817,\"longitude\":13.3804464},{\"latitude\":52.5189292,\"longitude\":13.3802962}]";
 
         //JsonArray list = new Gson().fromJson(json, JsonArray.class);
 
@@ -159,7 +291,8 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(options.getPoints().get(0), 15);
         mMap.animateCamera(location);
     }
-    private void addMarker (LatLng latLng, String label) {
+
+    private void addMarker(LatLng latLng, String label) {
 
         if (latLng == null) {
             return;
@@ -167,18 +300,18 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
         // Add a marker and move the camera
 
-        mMap.addMarker (new MarkerOptions ().position (latLng).title (label));
-        mMap.moveCamera (CameraUpdateFactory.newLatLng (latLng));
+        mMap.addMarker(new MarkerOptions().position(latLng).title(label));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override
-    public void onPermissionsGranted (int requestCode, @NonNull List<String> perms) {
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
 
-        postMapReady ();
+        postMapReady();
     }
 
     @Override
-    public void onPermissionsDenied (int requestCode, @NonNull List<String> perms) {
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
     }
 }

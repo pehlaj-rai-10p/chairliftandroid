@@ -31,4 +31,5 @@ public final class KeyConstants {
     public static final String KEY_RIDER_ID = "riderId";
     public static final String KEY_PICKUP_LOCATION = "pickupLocation";
     public static final String KEY_DROPOFF_LOCATION = "dropOffLocation";
+    public static final String KEY_DATA = "data";
 }

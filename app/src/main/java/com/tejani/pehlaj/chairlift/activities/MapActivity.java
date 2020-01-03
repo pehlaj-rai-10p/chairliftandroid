@@ -3,9 +3,11 @@ package com.tejani.pehlaj.chairlift.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -19,8 +21,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.tejani.pehlaj.chairlift.R;
 import com.tejani.pehlaj.chairlift.config.AppConfig;
 import com.tejani.pehlaj.chairlift.constants.Constants;
@@ -28,17 +28,15 @@ import com.tejani.pehlaj.chairlift.constants.KeyConstants;
 import com.tejani.pehlaj.chairlift.entities.Booking;
 import com.tejani.pehlaj.chairlift.entities.Bus;
 import com.tejani.pehlaj.chairlift.entities.BusDetails;
-import com.tejani.pehlaj.chairlift.entities.BusResponse;
+import com.tejani.pehlaj.chairlift.entities.Location;
 import com.tejani.pehlaj.chairlift.interfaces.Services;
 import com.tejani.pehlaj.chairlift.interfaces.WebServiceCallBack;
 import com.tejani.pehlaj.chairlift.network.ApiClient;
 import com.tejani.pehlaj.chairlift.network.WebClientCallBack;
 import com.tejani.pehlaj.chairlift.service.LocationFetcherService;
-import com.tejani.pehlaj.chairlift.utils.JsonUtility;
 import com.tejani.pehlaj.chairlift.utils.PreferenceUtility;
 import com.tejani.pehlaj.chairlift.utils.Utils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
@@ -58,6 +56,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     public Timer timer = new Timer();
     private GoogleMap mMap;
+    private Polyline line;
     private Polyline line1;
     private Polyline line2;
 
@@ -71,15 +70,14 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     private Bus bus;
     private Booking booking;
 
-    private String userName;
     private LatLng pickupLocation;
     private LatLng dropOffLocation;
 
-    private LatLng busLocation;
     private LatLng userLocation;
 
-    private int counter = 0;
+    private boolean isMapReady = false;
 
+    private int counter = 0;
     private int busTracker = 0;
 
     @Override
@@ -91,7 +89,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        userName = PreferenceUtility.getString(this, Utils.USERNAME, "USER");
         double lat = Double.parseDouble(PreferenceUtility.getString(this, KeyConstants.KEY_LAT, "67.0354019"));
         double lng = Double.parseDouble(PreferenceUtility.getString(this, KeyConstants.KEY_LNG, "24.8500037"));
         userLocation = new LatLng(lat, lng);
@@ -119,7 +116,9 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
                 bus = ((BusDetails) response).getData();
 
-                trackBusLocation(bus);
+                drawBusRoute(bus);
+                postMapReady();
+                //TODO trackBusLocation(bus);
             }
 
             @Override
@@ -129,6 +128,37 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         }, true));
     }
 
+    private void drawBusRoute(Bus bus) {
+
+        if (bus == null || bus.getRoute() == null || bus.getRoute().size() == 0) {
+            return;
+        }
+
+        final PolylineOptions options = new PolylineOptions().width(10).color(Color.BLUE).geodesic(true);
+
+        if (pickupLocation != null) {
+            options.add(pickupLocation);
+        }
+
+        for (int i = 0; i < bus.getRoute().size(); i++) {
+
+            Location data = bus.getRoute().get(i);
+            LatLng latLng = new LatLng(data.getLat(), data.getLat());
+            options.add(latLng);
+        }
+
+        if (dropOffLocation != null) {
+            options.add(dropOffLocation);
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                clearRoute();
+                line = mMap.addPolyline(options);
+            }
+        });
+    }
 
     private void populateBookingDetails(Booking booking) {
 
@@ -163,6 +193,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                     .on(Socket.EVENT_OPEN, openEventListener)
                     .on(Socket.EVENT_DATA, dataListener)
                     .on(Socket.EVENT_ERROR, errorListener)
+                    .on("event", eventListener)
                     .on(Socket.EVENT_TRANSPORT, transportListener)
                     .on(Socket.EVENT_CLOSE, closeEventListener)
                     .on(Socket.EVENT_PACKET, packetListener);
@@ -170,7 +201,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
             socket.io().on(Socket.EVENT_ERROR, iOErrorListener)
                     .on(Socket.EVENT_CLOSE, iOCloseEventListener);
 
-            socket.emit("event", "hi");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -188,28 +218,23 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                     JSONObject json = (JSONObject) args[0];
                     try {
                         JSONObject data = json.getJSONObject(KeyConstants.KEY_DATA);
-                        double lat = data.getDouble("latitude");
-                        double lng = data.getDouble("longitude");
-                        Log.e("Location", lat + ", " + lng);
-                        final PolylineOptions routeCovered = new PolylineOptions().width(10).color(Color.GRAY).geodesic(true);
-                        final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
-                        final LatLng latLng = new LatLng(lat, lng);
-                        routeCovered.add(pickupLocation);
-                        routeCovered.add(latLng);
-                        options.add(latLng);
-                        options.add(dropOffLocation);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                clearRoute();
-                                line1 = mMap.addPolyline(options);
-                                line2 = mMap.addPolyline(routeCovered);
-                                busMarker = addMarker(latLng, getString(R.string.app_name));
-                                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(latLng, 14);
-                                mMap.animateCamera(location);
+                        double lat = data.getDouble("lat");
+                        double lng = data.getDouble("lng");
+
+                        int busLocator = 0;
+                        if (bus != null && bus.getRoute() != null && bus.getRoute().size() > 0) {
+                            for (int i = 0; i < bus.getRoute().size(); i++) {
+                                Location location = bus.getRoute().get(i);
+                                if (location.has(lat, lng)) {
+                                    busLocator = i;
+                                    break;
+                                }
                             }
-                        });
-                    } catch (JSONException e) {
+                        }
+
+                        showBusLocation(busLocator, bus);
+
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else if (args[0] instanceof String) {
@@ -221,18 +246,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     };
 
-    private void clearRoute() {
-        if (line1 != null) {
-            line1.remove();
-        }
-        if (line2 != null) {
-            line2.remove();
-        }
-        if(busMarker != null) {
-            busMarker.remove();
-        }
-    }
-
+    // region Socket Listeners
     private Emitter.Listener openEventListener = new Emitter.Listener() {
 
         @Override
@@ -280,19 +294,39 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
             Log.e("Socket.io", "connectListener");
 
-            timer.purge();
-            timer.cancel();
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
-                    //socket.io().emit("event", "{\"content\": \"Test Message\"");
                     if (socket.connected()) {
-                        socket.emit("event", counter++);
+
+                        socket.emit("event", bus.getId(), booking.getId());
                     }
                 }
-            }, 1000, 10000);
+            }, 2000);
+        }
+
+    };
+
+    private Emitter.Listener eventListener = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.e("Socket.io", "errorListener");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MapActivity.this, "Ride Completed", Toast.LENGTH_LONG).show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 1000);
+                }
+            });
         }
 
     };
@@ -326,6 +360,160 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         }
 
     };
+
+    //endregion
+
+    private void clearRoute() {
+
+        if (line != null) {
+            line.remove();
+        }
+    }
+
+    private void clearTracks() {
+        if (line1 != null) {
+            line1.remove();
+        }
+        if (line2 != null) {
+            line2.remove();
+        }
+        if (busMarker != null) {
+            busMarker.remove();
+        }
+    }
+
+    @AfterPermissionGranted(1)
+    private void postMapReady() {
+
+        if (!isMapReady || bus == null) {
+            return;
+        }
+
+        //trackBusLocation(bus);
+
+        setupSocketIO();
+
+        if (mMap == null) {
+            return;
+        }
+
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            initLocationFetching(this);
+
+            //drawRoute ();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.permission_required), 1, perms);
+        }
+
+        populateBookingDetails(booking);
+    }
+
+    private void trackBusLocation(final Bus bus) {
+
+        if (bus == null) {
+            return;
+        }
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (bus == null || bus.getRoute() == null || bus.getRoute().size() == 0) {
+                    return;
+                }
+
+                showBusLocation(busTracker, bus);
+
+                busTracker++;
+
+
+                if (busTracker >= bus.getRoute().size()) {
+                    busTracker = bus.getRoute().size() - 1;
+                }
+            }
+        }, 1000, 5000);
+    }
+
+    private void showBusLocation(int busTracker, Bus bus) {
+
+        if (bus == null || bus.getRoute() == null || bus.getRoute().size() == 0) {
+            return;
+        }
+
+        final PolylineOptions routeCovered = new PolylineOptions().width(10).color(Color.GRAY).geodesic(true);
+        final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
+
+        routeCovered.add(pickupLocation);
+
+        LatLng busLatLng = new LatLng(0, 0);
+
+        for (int i = 0; i < bus.getRoute().size(); i++) {
+
+            Location location = bus.getRoute().get(i);
+            LatLng latLng = new LatLng(location.getLat(), location.getLng());
+            if (i == busTracker) {
+                routeCovered.add(latLng);
+                options.add(latLng);
+                busLatLng = latLng;
+            } else if (i < busTracker) {
+                routeCovered.add(latLng);
+            } else {
+                options.add(latLng);
+            }
+        }
+
+        options.add(dropOffLocation);
+
+        final LatLng tempLatLng = busLatLng;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                clearTracks();
+                line1 = mMap.addPolyline(options);
+                line2 = mMap.addPolyline(routeCovered);
+                busMarker = addMarker(tempLatLng, getString(R.string.app_name));
+                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(tempLatLng, 14);
+                mMap.animateCamera(location);
+            }
+        });
+    }
+
+    private Marker addMarker(LatLng latLng, String label) {
+
+        if (latLng == null) {
+            return null;
+        }
+
+        // Add a marker and move the camera
+
+        return mMap.addMarker(new MarkerOptions().position(latLng).title(label));
+    }
+
+    @Override
+    public void locationFetched(android.location.Location mLocal, android.location.Location oldLocation, String time, String locationProvider) {
+        super.locationFetched(mLocal, oldLocation, time, locationProvider);
+
+        userLocation = new LatLng(mLocal.getLatitude(), mLocal.getLongitude());
+        PreferenceUtility.setString(this, KeyConstants.KEY_LAT, String.valueOf(userLocation.latitude));
+        PreferenceUtility.setString(this, KeyConstants.KEY_LNG, String.valueOf(userLocation.longitude));
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+        postMapReady();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
 
     @Override
     protected void onStop() {
@@ -380,133 +568,9 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        isMapReady = true;
         mMap = googleMap;
         postMapReady();
     }
 
-    @AfterPermissionGranted(1)
-    private void postMapReady() {
-
-        trackBusLocation(bus);
-
-        //setupSocketIO();
-
-        if (mMap == null) {
-            return;
-        }
-
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-            initLocationFetching(this);
-
-            //drawRoute ();
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.permission_required), 1, perms);
-        }
-
-        populateBookingDetails(booking);
-    }
-
-    private void trackBusLocation(final Bus bus) {
-
-        if (bus == null) {
-            return;
-        }
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-
-                if (bus == null || bus.getRoute() == null || bus.getRoute().size() == 0) {
-                    return;
-                }
-
-                if (busTracker < bus.getRoute().size()) {
-
-                    final PolylineOptions routeCovered = new PolylineOptions().width(10).color(Color.GRAY).geodesic(true);
-                    final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
-
-                    routeCovered.add(pickupLocation);
-
-
-                    LatLng busLatLng = new LatLng(0, 0);
-
-                    for (int i = 0; i < bus.getRoute().size(); i++) {
-
-                        JsonObject data = bus.getRoute().get(i).getAsJsonObject();
-                        double lat = JsonUtility.getDouble(data, KeyConstants.KEY_LAT);
-                        double lng = JsonUtility.getDouble(data, KeyConstants.KEY_LNG);
-                        Log.e("Location", lat + ", " + lng);
-                        LatLng latLng = new LatLng(lat, lng);
-                        if (i == busTracker) {
-                            routeCovered.add(latLng);
-                            options.add(latLng);
-                            busLatLng = latLng;
-                        } else if (i < busTracker) {
-                            routeCovered.add(latLng);
-                        } else {
-                            options.add(latLng);
-                        }
-                    }
-
-                    options.add(dropOffLocation);
-
-                    final LatLng tempLatLng = busLatLng;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            clearRoute();
-                            line1 = mMap.addPolyline(options);
-                            line2 = mMap.addPolyline(routeCovered);
-                            busMarker = addMarker(tempLatLng, getString(R.string.app_name));
-                            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(tempLatLng, 14);
-                            mMap.animateCamera(location);
-                        }
-                    });
-
-                    busTracker++;
-                }
-
-                if (busTracker >= bus.getRoute().size()) {
-                    busTracker = bus.getRoute().size() - 1;
-                }
-            }
-        }, 1000, 5000);
-    }
-
-    @Override
-    public void locationFetched(Location mLocal, Location oldLocation, String time, String locationProvider) {
-        super.locationFetched(mLocal, oldLocation, time, locationProvider);
-
-        userLocation = new LatLng(mLocal.getLatitude(), mLocal.getLongitude());
-        PreferenceUtility.setString(this, KeyConstants.KEY_LAT, String.valueOf(userLocation.latitude));
-        PreferenceUtility.setString(this, KeyConstants.KEY_LNG, String.valueOf(userLocation.longitude));
-    }
-
-    private Marker addMarker(LatLng latLng, String label) {
-
-        if (latLng == null) {
-            return null;
-        }
-
-        // Add a marker and move the camera
-
-        return mMap.addMarker(new MarkerOptions().position(latLng).title(label));
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-        postMapReady();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
 }

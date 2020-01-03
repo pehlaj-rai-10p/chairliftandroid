@@ -3,10 +3,7 @@ package com.tejani.pehlaj.chairlift.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Pehlaj
@@ -32,10 +29,58 @@ public class Bus implements Parcelable {
 
     private String error;
 
-    private JsonArray route;
+    private List<Location> route;
 
     public Bus() {
     }
+
+    protected Bus(Parcel in) {
+        id = in.readInt();
+        year = in.readString();
+        capacity = in.readString();
+        availableSeats = in.readString();
+        registrationNumber = in.readString();
+        chasisNumber = in.readString();
+        driverName = in.readString();
+        make = in.readString();
+        model = in.readString();
+        status = in.readString();
+        error = in.readString();
+        route = in.createTypedArrayList(Location.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(year);
+        dest.writeString(capacity);
+        dest.writeString(availableSeats);
+        dest.writeString(registrationNumber);
+        dest.writeString(chasisNumber);
+        dest.writeString(driverName);
+        dest.writeString(make);
+        dest.writeString(model);
+        dest.writeString(status);
+        dest.writeString(error);
+        dest.writeTypedList(route);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Bus> CREATOR = new Creator<Bus>() {
+        @Override
+        public Bus createFromParcel(Parcel in) {
+            return new Bus(in);
+        }
+
+        @Override
+        public Bus[] newArray(int size) {
+            return new Bus[size];
+        }
+    };
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -59,32 +104,6 @@ public class Bus implements Parcelable {
         sb.append(availableSeats);
         return sb.toString();
     }
-
-    protected Bus(Parcel in) {
-        id = in.readInt();
-        year = in.readString();
-        capacity = in.readString();
-        availableSeats = in.readString();
-        registrationNumber = in.readString();
-        chasisNumber = in.readString();
-        driverName = in.readString();
-        make = in.readString();
-        model = in.readString();
-        status = in.readString();
-        error = in.readString();
-    }
-
-    public static final Creator<Bus> CREATOR = new Creator<Bus>() {
-        @Override
-        public Bus createFromParcel(Parcel in) {
-            return new Bus(in);
-        }
-
-        @Override
-        public Bus[] newArray(int size) {
-            return new Bus[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -134,27 +153,8 @@ public class Bus implements Parcelable {
         return error;
     }
 
-    public JsonArray getRoute() {
+    public List<Location> getRoute() {
         return route;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(year);
-        dest.writeString(capacity);
-        dest.writeString(availableSeats);
-        dest.writeString(registrationNumber);
-        dest.writeString(chasisNumber);
-        dest.writeString(driverName);
-        dest.writeString(make);
-        dest.writeString(model);
-        dest.writeString(status);
-        dest.writeString(error);
-    }
 }

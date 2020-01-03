@@ -2,8 +2,10 @@ package com.tejani.pehlaj.chairlift.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonObject;
 import com.tejani.pehlaj.chairlift.constants.Constants;
 import com.tejani.pehlaj.chairlift.constants.KeyConstants;
@@ -81,5 +83,9 @@ public class Location implements Parcelable {
 
     public double getLng() {
         return lng;
+    }
+
+    public boolean has(double lat, double lng) {
+        return lat != 0.0d && lng != 0.0d && this.lat == lat && this.lng == lng;
     }
 }

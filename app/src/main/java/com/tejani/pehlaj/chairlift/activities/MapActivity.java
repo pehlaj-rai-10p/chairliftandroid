@@ -9,29 +9,27 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-//import com.github.nkzawa.emitter.Emitter;
-//import com.github.nkzawa.engineio.client.transports.WebSocket;
-//import com.github.nkzawa.socketio.client.IO;
-//import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.tejani.pehlaj.chairlift.R;
+import com.tejani.pehlaj.chairlift.constants.Constants;
 import com.tejani.pehlaj.chairlift.constants.KeyConstants;
+import com.tejani.pehlaj.chairlift.entities.Booking;
 import com.tejani.pehlaj.chairlift.service.LocationFetcherService;
 import com.tejani.pehlaj.chairlift.utils.JsonUtility;
 import com.tejani.pehlaj.chairlift.utils.PreferenceUtility;
 import com.tejani.pehlaj.chairlift.utils.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,7 +42,6 @@ import io.socket.client.IO;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Socket;
 import io.socket.engineio.client.transports.WebSocket;
-import io.socket.parser.Packet;
 import meetmehdi.location.BaseActivityLocation;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -55,36 +52,21 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     private GoogleMap mMap;
     private Polyline line;
 
+    private Marker busMarker;
+    private Marker userMarker;
+    private Marker pickupMarker;
+    private Marker dropOffMarker;
+
     private io.socket.client.Socket socket;
 
+    private Booking booking;
+
     private String userName;
+    private LatLng pickupLocation;
+    private LatLng dropOffLocation;
+
+    private LatLng busLocation;
     private LatLng userLocation;
-
-    private JsonArray busRoute = new JsonArray();
-
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            Log.e("Socket.io", "" + args[0]);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    String data = (String) args[0];
-//                    String username;
-//                    String message;
-//                    try {
-//                        username = data.getString("username");
-//                        message = data.getString("message");
-//                    } catch (JSONException e) {
-//                        return;
-//                    }
-
-                    // add the message to view
-                    //Log.e("Socket.io", "" + data);
-                }
-            });
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,16 +78,35 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
 
         userName = PreferenceUtility.getString(this, Utils.USERNAME, "USER");
-        float lat = PreferenceUtility.getFloat(this, "LAT", 0);
-        float lng = PreferenceUtility.getFloat(this, "LNG", 0);
+        double lat = Double.parseDouble(PreferenceUtility.getString(this, KeyConstants.KEY_LAT, "67.0354019"));
+        double lng = Double.parseDouble(PreferenceUtility.getString(this, KeyConstants.KEY_LNG, "24.8500037"));
         userLocation = new LatLng(lat, lng);
-        //setupSecketConnection();
 
-        setupSocketIO ();
+        if (getIntent() == null || !getIntent().hasExtra(Constants.EXTRA_BOOKING)) {
+            return;
+        }
 
+        booking = getIntent().getParcelableExtra(Constants.EXTRA_BOOKING);
     }
 
-    private void setupSocketIO () {
+    private void populateBookingDetails(Booking booking) {
+
+        if (booking == null || booking.getPickupLocation() == null || booking.getDropoffLocation() == null) {
+            return;
+        }
+
+        pickupLocation = new LatLng(booking.getPickupLocation().getLat(), booking.getPickupLocation().getLng());
+        dropOffLocation = new LatLng(booking.getDropoffLocation().getLat(), booking.getDropoffLocation().getLng());
+
+        final PolylineOptions options = new PolylineOptions().width(10).color(Color.BLUE).geodesic(true);
+        options.add(pickupLocation);
+        options.add(dropOffLocation);
+        //mMap.addPolyline(options);
+        pickupMarker = addMarker(pickupLocation, getString(R.string.pickup));
+        dropOffMarker = addMarker(dropOffLocation, getString(R.string.dropoff));
+    }
+
+    private void setupSocketIO() {
         try {
             IO.Options opts = new IO.Options();
 
@@ -117,28 +118,16 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
             socket.connect();
 
-            socket.on("connect", handshakeListener)
+            socket.on("connect", connectListener)
                     .on(Socket.EVENT_OPEN, openEventListener)
                     .on(Socket.EVENT_DATA, dataListener)
-                    /*.on("event", eventListener)*/
                     .on(Socket.EVENT_ERROR, errorListener)
-                    /*.on(Socket.EVENT_HANDSHAKE, handshakeListener)*/
                     .on(Socket.EVENT_TRANSPORT, transportListener)
-                    /*.on(Socket.EVENT_MESSAGE, messageListener)*/
                     .on(Socket.EVENT_CLOSE, closeEventListener)
-                    .on(Socket.EVENT_PACKET, packetListener)
-                    /*.on(Socket.EVENT_PING, pingEventListener)*/;
+                    .on(Socket.EVENT_PACKET, packetListener);
 
-            socket.io()/*.on(Socket.EVENT_OPEN, iOOpenEventListener)*/
-                    .on(Socket.EVENT_DATA, iODataListener)
-                    .on("event", iOEventListener)
-                    .on(Socket.EVENT_ERROR, iOErrorListener)
-                    /*.on(Socket.EVENT_HANDSHAKE, iOHandshakeListener)*/
-                    /*.on(Socket.EVENT_TRANSPORT, iOTransportListener)*/
-                    .on(Socket.EVENT_MESSAGE, iOMessageListener)
-                    .on(Socket.EVENT_CLOSE, iOCloseEventListener)
-                    /*.on(Socket.EVENT_PACKET, iOPacketListener)*/
-                    /*.on(Socket.EVENT_PING, iOPingEventListener)*/;
+            socket.io().on(Socket.EVENT_ERROR, iOErrorListener)
+                    .on(Socket.EVENT_CLOSE, iOCloseEventListener);
 
             socket.emit("event", "hi");
         } catch (URISyntaxException e) {
@@ -160,10 +149,11 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                         JSONObject data = json.getJSONObject(KeyConstants.KEY_DATA);
                         double lat = data.getDouble("latitude");
                         double lng = data.getDouble("longitude");
-                        final PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+                        Log.e("Location", lat + ", " + lng);
+                        final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
                         final LatLng latLng = new LatLng(lat, lng);
                         options.add(latLng);
-                        options.add(userLocation);
+                        options.add(dropOffLocation);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -171,30 +161,22 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                                     line.remove();
                                 }
                                 line = mMap.addPolyline(options);
-                                addMarker(latLng, getString(R.string.app_name));
-                                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(options.getPoints().get(0), 15);
+                                if(busMarker != null) {
+                                    busMarker.remove();
+                                }
+                                busMarker = addMarker(latLng, getString(R.string.app_name));
+                                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(latLng, 12);
                                 mMap.animateCamera(location);
                             }
                         });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
-                else if (args[0] instanceof String) {
+                } else if (args[0] instanceof String) {
                     String data = (String) args[0];
                     Log.e("Socket IO Data", data);
                 }
             }
-        }
-
-    };
-
-    private Emitter.Listener pingEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "pingEventListener");
         }
 
     };
@@ -219,16 +201,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     };
 
-    private Emitter.Listener eventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "eventListener");
-        }
-
-    };
-
     private Emitter.Listener packetListener = new Emitter.Listener() {
 
         @Override
@@ -249,12 +221,12 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     };
 
-    private Emitter.Listener handshakeListener = new Emitter.Listener() {
+    private Emitter.Listener connectListener = new Emitter.Listener() {
 
         @Override
         public void call(Object... args) {
 
-            Log.e("Socket.io", "handshakeListener");
+            Log.e("Socket.io", "connectListener");
 
             timer.purge();
             timer.cancel();
@@ -283,109 +255,12 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     };
 
-    private Emitter.Listener messageListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "messageListener");
-        }
-
-    };
-
-    private Emitter.Listener iODataListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iODataListener");
-        }
-
-    };
-
-    private Emitter.Listener iOPingEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOPingEventListener");
-        }
-
-    };
-
-    private Emitter.Listener iOOpenEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOOpenEventListener");
-        }
-
-    };
-
     private Emitter.Listener iOCloseEventListener = new Emitter.Listener() {
 
         @Override
         public void call(Object... args) {
 
             Log.e("Socket.io", "iOCloseEventListener");
-        }
-
-    };
-
-    private Emitter.Listener iOEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOEventListener");
-        }
-
-    };
-
-    private Emitter.Listener iOPacketListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOPacketListener");
-
-            if (args != null && args.length > 0) {
-                if (args[0] instanceof Packet) {
-                    Packet packet = (Packet) args[0];
-                    if (packet.data instanceof JSONArray) {
-                        JSONArray data = (JSONArray) packet.data;
-                        Log.e("Socket IO Data", data.toString());
-                        if (data.length() > 0) {
-                            try {
-                                Log.e("Socket IO Data", data.get(0).toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    };
-
-    private Emitter.Listener iOTransportListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOTransportListener");
-        }
-
-    };
-
-    private Emitter.Listener iOHandshakeListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOHandshakeListener");
         }
 
     };
@@ -399,52 +274,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         }
 
     };
-
-    private Emitter.Listener iOMessageListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOMessageListener");
-        }
-
-    };
-
-    private void setupSecketConnection() {
-        try {
-
-
-            IO.Options opts = new IO.Options();
-            opts.secure = false;
-            opts.path = "/api/v1/bus";
-            opts.transports = new String[]{WebSocket.NAME};
-
-            socket = IO.socket("http://172.16.17.242:4003/", opts);
-
-            //socket = IO.socket("http://172.16.17.242:4003/api/v1/bus/", );
-
-            //socket.on("info", onNewMessage);
-            //socket.on("event", onNewMessage);
-            //socket.on("event", onNewMessage);
-            //socket.io().on("/", onNewMessage);
-            //socket.io().on("info", onNewMessage);
-            //socket.io().on("event", onNewMessage);
-            socket.connect();
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-
-                    //socket.io().emit("event", "{\"content\": \"Test Message\"");
-                    if (socket.connected()) {
-                        //socket.emit("event", "{\"content\": \"Message sent from AndroidApp using Socket.IO\"");
-                    }
-                }
-            }, 5000, 30000);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onStop() {
@@ -504,6 +333,8 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     @AfterPermissionGranted(1)
     private void postMapReady() {
 
+        setupSocketIO();
+
         if (mMap == null) {
             return;
         }
@@ -515,35 +346,30 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            float lat = PreferenceUtility.getFloat(this, "LAT", 0.0f);
-            float lng = PreferenceUtility.getFloat(this, "LNG", 0.0f);
-
-            if (lat != 0.0f) {
-                LatLng latLng = new LatLng(lat, lat);
-                addMarker(latLng, "Test");
-            }
-
             initLocationFetching(this);
 
             //drawRoute ();
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.permission_required), 1, perms);
         }
+
+        populateBookingDetails(booking);
     }
 
     @Override
     public void locationFetched(Location mLocal, Location oldLocation, String time, String locationProvider) {
         super.locationFetched(mLocal, oldLocation, time, locationProvider);
 
-        //Toast.makeText(getApplication(), "Latitude : " + mLocal.getLatitude() + " Longitude : " + mLocal.getLongitude(), Toast.LENGTH_SHORT).show();
         userLocation = new LatLng(mLocal.getLatitude(), mLocal.getLongitude());
-        addMarker(userLocation, userName);
-        PreferenceUtility.setFloat(this, "LAT", (float) mLocal.getLatitude());
-        PreferenceUtility.setFloat(this, "LNG", (float) mLocal.getLongitude());
+        /*if (userMarker != null) {
+            userMarker.remove();
+        }
+        userMarker = addMarker(userLocation, userName);*/
+        PreferenceUtility.setString(this, KeyConstants.KEY_LAT, String.valueOf(userLocation.latitude));
+        PreferenceUtility.setString(this, KeyConstants.KEY_LNG, String.valueOf(userLocation.longitude));
 
         //CameraUpdate location = CameraUpdateFactory.newLatLngZoom(userLocation, 15);
         //mMap.animateCamera(location);
-
 
         //drawRoute();
     }
@@ -556,7 +382,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         //JsonArray list = new Gson().fromJson(json, JsonArray.class);
 
         JsonArray list = JsonUtility.parse(jsonData).getAsJsonArray();
-        PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+        PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
         for (int z = 0; z < list.size(); z++) {
             JsonObject jsonObject = list.get(z).getAsJsonObject();
             double lat = JsonUtility.getDouble(jsonObject, "latitude", 0);
@@ -570,16 +396,18 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         mMap.animateCamera(location);
     }
 
-    private void addMarker(LatLng latLng, String label) {
+    private Marker addMarker(LatLng latLng, String label) {
 
         if (latLng == null) {
-            return;
+            return null;
         }
 
         // Add a marker and move the camera
 
-        mMap.addMarker(new MarkerOptions().position(latLng).title(label));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(label));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        return marker;
     }
 
     @Override

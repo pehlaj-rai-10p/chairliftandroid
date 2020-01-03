@@ -73,7 +73,8 @@ public class BusListActivity extends AppCompatActivity implements BusCallback {
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
-            getBusList();
+            setResult(RESULT_OK);
+            finish();
         }
     }
 

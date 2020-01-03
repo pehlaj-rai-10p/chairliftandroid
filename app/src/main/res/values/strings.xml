@@ -111,4 +111,7 @@
     <string name="login_failed">"Login failed"</string>
     <string name="permission_required">Permission required.</string>
 
+    <string name="pickup">Pickup</string>
+    <string name="dropoff">Drop off</string>
+
 </resources>

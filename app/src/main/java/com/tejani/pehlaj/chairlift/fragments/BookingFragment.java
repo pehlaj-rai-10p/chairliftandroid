@@ -308,8 +308,9 @@ public class BookingFragment extends Fragment implements BookingCallback {
             return;
         }
 
-        startActivity(new Intent(getContext(), MapActivity.class));
-
+        Intent intent = new Intent(getContext(), MapActivity.class);
+        intent.putExtra(Constants.EXTRA_BOOKING, booking);
+        startActivity(intent);
     }
 
     private void showBookingDetailsScreen(Booking booking) {

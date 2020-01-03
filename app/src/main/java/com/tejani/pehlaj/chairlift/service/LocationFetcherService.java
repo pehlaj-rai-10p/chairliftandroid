@@ -18,7 +18,7 @@ public class LocationFetcherService extends Service implements LocationManagerIn
     private SmartLocationManager smartLocationManager;
 
     private double lat;
-    private double lon;
+    private double lng;
 
     private static final long SERVICE_PERIOD = (5) * 1000;
 
@@ -68,7 +68,7 @@ public class LocationFetcherService extends Service implements LocationManagerIn
     @Override
     public void locationFetched(Location mLocation, Location oldLocation, String time, String locationProvider) {
         lat = mLocation.getLatitude();
-        lon = mLocation.getLongitude();
+        lng = mLocation.getLongitude();
     }
 
     @Override

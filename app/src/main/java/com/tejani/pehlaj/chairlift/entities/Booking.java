@@ -26,7 +26,7 @@ public class Booking extends BaseEntity implements Parcelable {
 
     private Location pickupLocation;
 
-    private Location dropoffLocation;
+    private Location dropOffLocation;
 
     public Booking() {
     }
@@ -42,7 +42,7 @@ public class Booking extends BaseEntity implements Parcelable {
         bookingTime = in.readString();
         trackingNumber = in.readString();
         pickupLocation = in.readParcelable(Location.class.getClassLoader());
-        dropoffLocation = in.readParcelable(Location.class.getClassLoader());
+        dropOffLocation = in.readParcelable(Location.class.getClassLoader());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class Booking extends BaseEntity implements Parcelable {
         dest.writeString(bookingTime);
         dest.writeString(trackingNumber);
         dest.writeParcelable(pickupLocation, flags);
-        dest.writeParcelable(dropoffLocation, flags);
+        dest.writeParcelable(dropOffLocation, flags);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Booking extends BaseEntity implements Parcelable {
     }
 
     public Location getDropoffLocation() {
-        return dropoffLocation;
+        return dropOffLocation;
     }
 
     public String getPickupLatLng() {
@@ -126,6 +126,6 @@ public class Booking extends BaseEntity implements Parcelable {
     }
 
     public String getDropoffLatLng() {
-        return dropoffLocation == null ? Constants.NA : dropoffLocation.getLatLng();
+        return dropOffLocation == null ? Constants.NA : dropOffLocation.getLatLng();
     }
 }

@@ -331,8 +331,10 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     protected void onStop() {
         super.onStop();
 
-        socket.disconnect();
-        //socket.off("event", onNewMessage);
+        if (socket != null) {
+            socket.off(Socket.EVENT_DATA, dataListener);
+            socket.disconnect();
+        }
     }
 
     protected void onStart() {
@@ -431,24 +433,30 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
                     routeCovered.add(pickupLocation);
 
-                    LatLng latLng = new LatLng(0, 0);
+
+                    LatLng busLatLng = new LatLng(0, 0);
+
                     for (int i = 0; i < bus.getRoute().size(); i++) {
 
                         JsonObject data = bus.getRoute().get(i).getAsJsonObject();
                         double lat = JsonUtility.getDouble(data, KeyConstants.KEY_LAT);
                         double lng = JsonUtility.getDouble(data, KeyConstants.KEY_LNG);
                         Log.e("Location", lat + ", " + lng);
-                        latLng = new LatLng(lat, lng);
-                        if (busTracker > i) {
-                            options.add(latLng);
-                        } else {
+                        LatLng latLng = new LatLng(lat, lng);
+                        if (i == busTracker) {
                             routeCovered.add(latLng);
+                            options.add(latLng);
+                            busLatLng = latLng;
+                        } else if (i < busTracker) {
+                            routeCovered.add(latLng);
+                        } else {
+                            options.add(latLng);
                         }
                     }
 
                     options.add(dropOffLocation);
 
-                    final LatLng tempLatLng = latLng;
+                    final LatLng tempLatLng = busLatLng;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -468,7 +476,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                     busTracker = bus.getRoute().size() - 1;
                 }
             }
-        }, 1000, 10000);
+        }, 1000, 5000);
     }
 
     @Override

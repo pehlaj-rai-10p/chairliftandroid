@@ -22,9 +22,17 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.tejani.pehlaj.chairlift.R;
+import com.tejani.pehlaj.chairlift.config.AppConfig;
 import com.tejani.pehlaj.chairlift.constants.Constants;
 import com.tejani.pehlaj.chairlift.constants.KeyConstants;
 import com.tejani.pehlaj.chairlift.entities.Booking;
+import com.tejani.pehlaj.chairlift.entities.Bus;
+import com.tejani.pehlaj.chairlift.entities.BusDetails;
+import com.tejani.pehlaj.chairlift.entities.BusResponse;
+import com.tejani.pehlaj.chairlift.interfaces.Services;
+import com.tejani.pehlaj.chairlift.interfaces.WebServiceCallBack;
+import com.tejani.pehlaj.chairlift.network.ApiClient;
+import com.tejani.pehlaj.chairlift.network.WebClientCallBack;
 import com.tejani.pehlaj.chairlift.service.LocationFetcherService;
 import com.tejani.pehlaj.chairlift.utils.JsonUtility;
 import com.tejani.pehlaj.chairlift.utils.PreferenceUtility;
@@ -50,7 +58,8 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     public Timer timer = new Timer();
     private GoogleMap mMap;
-    private Polyline line;
+    private Polyline line1;
+    private Polyline line2;
 
     private Marker busMarker;
     private Marker userMarker;
@@ -59,6 +68,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     private io.socket.client.Socket socket;
 
+    private Bus bus;
     private Booking booking;
 
     private String userName;
@@ -67,6 +77,10 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
     private LatLng busLocation;
     private LatLng userLocation;
+
+    private int counter = 0;
+
+    private int busTracker = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +101,34 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         }
 
         booking = getIntent().getParcelableExtra(Constants.EXTRA_BOOKING);
+
+        getBusDetails(booking.getBusId());
     }
+
+    private void getBusDetails(int busId) {
+
+        String auth = AppConfig.getInstance().getBase6Authorization();
+        ApiClient.getClient().create(Services.class).getBusDetails(auth, busId).enqueue(new WebClientCallBack<BusDetails>(this, new WebServiceCallBack() {
+            @Override
+            public void onSuccess(Object response) {
+
+                if (!(response instanceof BusDetails) || ((BusDetails) response).getData() == null) {
+                    Utils.showToast(getApplicationContext(), ((BusDetails) response).getError());
+                    return;
+                }
+
+                bus = ((BusDetails) response).getData();
+
+                trackBusLocation(bus);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Utils.showToast(MapActivity.this, errorMessage);
+            }
+        }, true));
+    }
+
 
     private void populateBookingDetails(Booking booking) {
 
@@ -111,7 +152,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
             IO.Options opts = new IO.Options();
 
             opts.secure = false;
-            opts.path = "/api/v1/bus";
+            opts.path = "/api/v1/bus/track";
             opts.transports = new String[]{WebSocket.NAME};
 
             socket = IO.socket("http://172.16.17.242:4001/", opts);
@@ -150,22 +191,21 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                         double lat = data.getDouble("latitude");
                         double lng = data.getDouble("longitude");
                         Log.e("Location", lat + ", " + lng);
+                        final PolylineOptions routeCovered = new PolylineOptions().width(10).color(Color.GRAY).geodesic(true);
                         final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
                         final LatLng latLng = new LatLng(lat, lng);
+                        routeCovered.add(pickupLocation);
+                        routeCovered.add(latLng);
                         options.add(latLng);
                         options.add(dropOffLocation);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (line != null) {
-                                    line.remove();
-                                }
-                                line = mMap.addPolyline(options);
-                                if(busMarker != null) {
-                                    busMarker.remove();
-                                }
+                                clearRoute();
+                                line1 = mMap.addPolyline(options);
+                                line2 = mMap.addPolyline(routeCovered);
                                 busMarker = addMarker(latLng, getString(R.string.app_name));
-                                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+                                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(latLng, 14);
                                 mMap.animateCamera(location);
                             }
                         });
@@ -180,6 +220,18 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         }
 
     };
+
+    private void clearRoute() {
+        if (line1 != null) {
+            line1.remove();
+        }
+        if (line2 != null) {
+            line2.remove();
+        }
+        if(busMarker != null) {
+            busMarker.remove();
+        }
+    }
 
     private Emitter.Listener openEventListener = new Emitter.Listener() {
 
@@ -237,7 +289,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
                     //socket.io().emit("event", "{\"content\": \"Test Message\"");
                     if (socket.connected()) {
-                        socket.emit("event", "{\"content\": \"Message sent from AndroidApp using Socket.IO\"");
+                        socket.emit("event", counter++);
                     }
                 }
             }, 1000, 10000);
@@ -333,7 +385,9 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     @AfterPermissionGranted(1)
     private void postMapReady() {
 
-        setupSocketIO();
+        trackBusLocation(bus);
+
+        //setupSocketIO();
 
         if (mMap == null) {
             return;
@@ -356,44 +410,74 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
         populateBookingDetails(booking);
     }
 
+    private void trackBusLocation(final Bus bus) {
+
+        if (bus == null) {
+            return;
+        }
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (bus == null || bus.getRoute() == null || bus.getRoute().size() == 0) {
+                    return;
+                }
+
+                if (busTracker < bus.getRoute().size()) {
+
+                    final PolylineOptions routeCovered = new PolylineOptions().width(10).color(Color.GRAY).geodesic(true);
+                    final PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
+
+                    routeCovered.add(pickupLocation);
+
+                    LatLng latLng = new LatLng(0, 0);
+                    for (int i = 0; i < bus.getRoute().size(); i++) {
+
+                        JsonObject data = bus.getRoute().get(i).getAsJsonObject();
+                        double lat = JsonUtility.getDouble(data, KeyConstants.KEY_LAT);
+                        double lng = JsonUtility.getDouble(data, KeyConstants.KEY_LNG);
+                        Log.e("Location", lat + ", " + lng);
+                        latLng = new LatLng(lat, lng);
+                        if (busTracker > i) {
+                            options.add(latLng);
+                        } else {
+                            routeCovered.add(latLng);
+                        }
+                    }
+
+                    options.add(dropOffLocation);
+
+                    final LatLng tempLatLng = latLng;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            clearRoute();
+                            line1 = mMap.addPolyline(options);
+                            line2 = mMap.addPolyline(routeCovered);
+                            busMarker = addMarker(tempLatLng, getString(R.string.app_name));
+                            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(tempLatLng, 14);
+                            mMap.animateCamera(location);
+                        }
+                    });
+
+                    busTracker++;
+                }
+
+                if (busTracker >= bus.getRoute().size()) {
+                    busTracker = bus.getRoute().size() - 1;
+                }
+            }
+        }, 1000, 10000);
+    }
+
     @Override
     public void locationFetched(Location mLocal, Location oldLocation, String time, String locationProvider) {
         super.locationFetched(mLocal, oldLocation, time, locationProvider);
 
         userLocation = new LatLng(mLocal.getLatitude(), mLocal.getLongitude());
-        /*if (userMarker != null) {
-            userMarker.remove();
-        }
-        userMarker = addMarker(userLocation, userName);*/
         PreferenceUtility.setString(this, KeyConstants.KEY_LAT, String.valueOf(userLocation.latitude));
         PreferenceUtility.setString(this, KeyConstants.KEY_LNG, String.valueOf(userLocation.longitude));
-
-        //CameraUpdate location = CameraUpdateFactory.newLatLngZoom(userLocation, 15);
-        //mMap.animateCamera(location);
-
-        //drawRoute();
-    }
-
-    private void drawRoute(String jsonData) {
-
-        //String json = "[{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5162792,\"longitude\":13.3795345},{\"latitude\":52.5163651,\"longitude\":13.3808541},{\"latitude\":52.5180817,\"longitude\":13.3804464},{\"latitude\":52.5189292,\"longitude\":13.3802962},{\"latitude\":52.5206638,\"longitude\":13.3861149}]";
-        String json = "[{\"latitude\":52.5162041,\"longitude\":13.378365},{\"latitude\":52.5159999,\"longitude\":13.3778999},{\"latitude\":52.5206638,\"longitude\":13.3861149},{\"latitude\":52.5205999,\"longitude\":13.3861999},{\"latitude\":52.5162792,\"longitude\":13.3795345},{\"latitude\":52.5163651,\"longitude\":13.3808541},{\"latitude\":52.5180817,\"longitude\":13.3804464},{\"latitude\":52.5189292,\"longitude\":13.3802962}]";
-
-        //JsonArray list = new Gson().fromJson(json, JsonArray.class);
-
-        JsonArray list = JsonUtility.parse(jsonData).getAsJsonArray();
-        PolylineOptions options = new PolylineOptions().width(10).color(Color.RED).geodesic(true);
-        for (int z = 0; z < list.size(); z++) {
-            JsonObject jsonObject = list.get(z).getAsJsonObject();
-            double lat = JsonUtility.getDouble(jsonObject, "latitude", 0);
-            double lng = JsonUtility.getDouble(jsonObject, "longitude", 0);
-            LatLng latLng = new LatLng(lat, lng);
-            options.add(latLng);
-        }
-        line = mMap.addPolyline(options);
-
-        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(options.getPoints().get(0), 15);
-        mMap.animateCamera(location);
     }
 
     private Marker addMarker(LatLng latLng, String label) {
@@ -404,10 +488,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
         // Add a marker and move the camera
 
-        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(label));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-        return marker;
+        return mMap.addMarker(new MarkerOptions().position(latLng).title(label));
     }
 
     @Override

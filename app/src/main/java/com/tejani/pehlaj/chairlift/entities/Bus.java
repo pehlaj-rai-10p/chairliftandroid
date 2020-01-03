@@ -3,6 +3,11 @@ package com.tejani.pehlaj.chairlift.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.util.HashMap;
+
 /**
  * @author Pehlaj
  * @since 6/4/2017.
@@ -26,6 +31,8 @@ public class Bus implements Parcelable {
     private String status;
 
     private String error;
+
+    private JsonArray route;
 
     public Bus() {
     }
@@ -125,6 +132,10 @@ public class Bus implements Parcelable {
 
     public String getError() {
         return error;
+    }
+
+    public JsonArray getRoute() {
+        return route;
     }
 
     @Override

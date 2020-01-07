@@ -164,7 +164,12 @@ public class BookRideActivity extends AppCompatActivity {
     private void bookRide(final int busId, Location pickup, Location dropOff) {
 
         pickup = new Location(24.8639554, 67.0747855); //Parsa Tower
-        dropOff = new Location(24.779874, 67.089635); //Nueplex
+
+        if (busId % 2 == 0) {
+            dropOff = new Location(24.779874, 67.089635); //Nueplex
+        } else {
+            dropOff = new Location(24.843437, 67.039231); //Cantt
+        }
 
         if (busId < 0 || pickup == null || dropOff == null) {
             return;

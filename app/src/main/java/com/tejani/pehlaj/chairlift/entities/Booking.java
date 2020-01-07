@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.tejani.pehlaj.chairlift.constants.Constants;
+import com.tejani.pehlaj.chairlift.utils.DateAndTimeUtility;
 
 /**
  * @author Pehlaj
@@ -99,19 +100,19 @@ public class Booking extends BaseEntity implements Parcelable {
     }
 
     public String getPickupTime() {
-        return pickupTime;
+        return DateAndTimeUtility.formatDate(pickupTime, DateAndTimeUtility.UTC_DATE_FORMAT_WITH_MILLIS, DateAndTimeUtility.CHAIRLIFT_DATE_FORMAT);
     }
 
     public String getArrivalTime() {
-        return arrivalTime;
+        return DateAndTimeUtility.formatDate(arrivalTime, DateAndTimeUtility.UTC_DATE_FORMAT_WITH_MILLIS, DateAndTimeUtility.CHAIRLIFT_DATE_FORMAT);
     }
 
     public String getDropOffTime() {
-        return dropOffTime;
+        return DateAndTimeUtility.formatDate(dropOffTime, DateAndTimeUtility.UTC_DATE_FORMAT_WITH_MILLIS, DateAndTimeUtility.CHAIRLIFT_DATE_FORMAT);
     }
 
     public String getBookingTime() {
-        return bookingTime;
+        return DateAndTimeUtility.formatDate(bookingTime, DateAndTimeUtility.UTC_DATE_FORMAT_WITH_MILLIS, DateAndTimeUtility.CHAIRLIFT_DATE_FORMAT);
     }
 
     public String getTrackingNumber() {

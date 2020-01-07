@@ -55,7 +55,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MapActivity extends BaseActivityLocation implements OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
-    public Timer timer = new Timer();
+    private static final String API_BUS_TRACK = "/api/v1/bus/track";
+    private static final String CONNECT = "connect";
+    private static final String EVENT = "event";
+
     private GoogleMap mMap;
     private Polyline line;
     private Polyline line1;
@@ -183,24 +186,16 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
             IO.Options opts = new IO.Options();
 
             opts.secure = false;
-            opts.path = "/api/v1/bus/track";
+            opts.path = API_BUS_TRACK;
             opts.transports = new String[]{WebSocket.NAME};
 
             socket = IO.socket(EnvironmentConstants.SOCKET_IO_URL_AWS_SERVER, opts);
 
             socket.connect();
 
-            socket.on("connect", connectListener)
-                    .on(Socket.EVENT_OPEN, openEventListener)
+            socket.on(CONNECT, connectListener)
                     .on(Socket.EVENT_DATA, dataListener)
-                    .on(Socket.EVENT_ERROR, errorListener)
-                    .on("event", eventListener)
-                    .on(Socket.EVENT_TRANSPORT, transportListener)
-                    .on(Socket.EVENT_CLOSE, closeEventListener)
-                    .on(Socket.EVENT_PACKET, packetListener);
-
-            socket.io().on(Socket.EVENT_ERROR, iOErrorListener)
-                    .on(Socket.EVENT_CLOSE, iOCloseEventListener);
+                    .on(EVENT, eventListener);
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -248,45 +243,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
     };
 
     // region Socket Listeners
-    private Emitter.Listener openEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "openEventListener");
-        }
-
-    };
-
-    private Emitter.Listener closeEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "closeEventListener");
-        }
-
-    };
-
-    private Emitter.Listener packetListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "packetListener");
-        }
-
-    };
-
-    private Emitter.Listener transportListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "transportListener");
-        }
-
-    };
 
     private Emitter.Listener connectListener = new Emitter.Listener() {
 
@@ -301,7 +257,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
 
                     if (socket.connected()) {
 
-                        socket.emit("event", bus.getId(), booking.getId());
+                        socket.emit(EVENT, bus.getId(), booking.getId());
                     }
                 }
             }, 2000);
@@ -328,36 +284,6 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                     }, 1000);
                 }
             });
-        }
-
-    };
-
-    private Emitter.Listener errorListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "errorListener");
-        }
-
-    };
-
-    private Emitter.Listener iOCloseEventListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOCloseEventListener");
-        }
-
-    };
-
-    private Emitter.Listener iOErrorListener = new Emitter.Listener() {
-
-        @Override
-        public void call(Object... args) {
-
-            Log.e("Socket.io", "iOErrorListener");
         }
 
     };

@@ -479,7 +479,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
                 line1 = mMap.addPolyline(options);
                 line2 = mMap.addPolyline(routeCovered);
                 busMarker = addMarker(tempLatLng, getString(R.string.app_name));
-                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(tempLatLng, 14);
+                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(tempLatLng, 13);
                 mMap.animateCamera(location);
             }
         });

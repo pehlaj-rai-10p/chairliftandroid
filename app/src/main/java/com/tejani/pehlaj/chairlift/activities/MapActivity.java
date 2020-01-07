@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.tejani.pehlaj.chairlift.R;
 import com.tejani.pehlaj.chairlift.config.AppConfig;
 import com.tejani.pehlaj.chairlift.constants.Constants;
+import com.tejani.pehlaj.chairlift.constants.EnvironmentConstants;
 import com.tejani.pehlaj.chairlift.constants.KeyConstants;
 import com.tejani.pehlaj.chairlift.entities.Booking;
 import com.tejani.pehlaj.chairlift.entities.Bus;
@@ -185,7 +186,7 @@ public class MapActivity extends BaseActivityLocation implements OnMapReadyCallb
             opts.path = "/api/v1/bus/track";
             opts.transports = new String[]{WebSocket.NAME};
 
-            socket = IO.socket("http://172.16.17.242:4001/", opts);
+            socket = IO.socket(EnvironmentConstants.SOCKET_IO_URL_AWS_SERVER, opts);
 
             socket.connect();
 

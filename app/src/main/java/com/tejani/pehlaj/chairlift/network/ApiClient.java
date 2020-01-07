@@ -41,7 +41,7 @@ public class ApiClient {
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(EnvironmentConstants.BASE_URL)
+                    .baseUrl(EnvironmentConstants.API_BASE_URL_AWS)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(okHttpClient)
                     .build();

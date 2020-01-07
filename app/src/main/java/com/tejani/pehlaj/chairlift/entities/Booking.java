@@ -2,6 +2,7 @@ package com.tejani.pehlaj.chairlift.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.tejani.pehlaj.chairlift.constants.Constants;
 
@@ -11,6 +12,10 @@ import com.tejani.pehlaj.chairlift.constants.Constants;
  */
 
 public class Booking extends BaseEntity implements Parcelable {
+
+    private static final String IDLE = "Idle";
+    private static final String COMPLETE = "Complete";
+    private static final String IN_PROGRESS = "InProgress";
 
     protected int id;
     private int busId;
@@ -128,4 +133,17 @@ public class Booking extends BaseEntity implements Parcelable {
     public String getDropoffLatLng() {
         return dropOffLocation == null ? Constants.NA : dropOffLocation.getLatLng();
     }
+
+    public boolean isIdle() {
+        return !TextUtils.isEmpty(status) && !status.equalsIgnoreCase(IDLE);
+    }
+
+    public boolean isInProgress() {
+        return !TextUtils.isEmpty(status) && status.equalsIgnoreCase(IN_PROGRESS);
+    }
+
+    public boolean isComplete() {
+        return !TextUtils.isEmpty(status) && status.equalsIgnoreCase(COMPLETE);
+    }
+
 }
